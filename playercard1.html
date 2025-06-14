@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Player Card</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 4px solid #333; }
+    .title { font-size: 2rem; font-weight: bold; letter-spacing: 0.05em; display: flex; align-items: center; }
+    .title img { height: 50px; margin-right: 1rem; }
+    .menu-icon { cursor: pointer; width: 30px; }
+    .menu-icon div { height: 4px; background: #333; margin: 5px 0; border-radius: 2px; }
+    nav { display: none; position: absolute; right: 2rem; top: 5rem; background: #fff; border: 1px solid #ccc; box-shadow: 2px 2px 8px #bbb; border-radius: 8px; z-index: 999; }
+    nav a { display: block; padding: 1rem 2rem; text-decoration: none; color: #222; }
+    nav a:hover { background: #eee; }
+
+    .card { max-width: 700px; margin: 3rem auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 0 12px rgba(0,0,0,.1); }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
+    .back-button {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 1rem 2rem;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="title"><img src="images/new_logo.png"><span>WCA Hockey League</span></div>
+  <div class="menu-icon" onclick="toggleMenu()"><div></div><div></div><div></div></div>
+  <nav id="dropdownMenu">
+    <a href="index.html">Home</a>
+    <a href="league-stats.html">League Stats</a>
+  </nav>
+</header>
+
+<div class="card" id="card">Loading player card...</div>
+
+<script>
+function toggleMenu() {
+  var nav = document.getElementById('dropdownMenu');
+  nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
+}
+
+const params = new URLSearchParams(window.location.search);
+const tab = params.get('tab') || "Skater Master";
+const player = params.get('player');
+
+fetch(`https://script.google.com/macros/s/AKfycbw63rl_7Lmhrf_m2dLp6KVCY7hqKN912_-Bpc6_1ClHFmayoASTQw0Ng4_S4vnxvQ5MNQ/exec?tab=${encodeURIComponent(tab)}&player=${encodeURIComponent(player)}&json=1`)
+  .then(r => r.json())
+  .then(data => {
+    const card = document.getElementById('card');
+    if (!data.found) {
+      card.innerHTML = `<h2>Player not found</h2>`;
+    } else {
+      card.innerHTML = data.card + `<br><a class="back-button" href="${tab.includes('Goalie') ? 'goalie-stats.html' : 'player-stats.html'}">← Back</a>`;
+    }
+  })
+  .catch(() => {
+    document.getElementById('card').innerHTML = "<p>Failed to load player card.</p>";
+  });
+</script>
+</body>
+</html>

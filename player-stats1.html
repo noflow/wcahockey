@@ -1,13 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="utf-8">
-  <title>
-   Player Stats
-  </title>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+<head>
+  <meta charset="UTF-8" />
+  <title>Player Stats</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-   body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
+    body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 4px solid #333; }
     .title { font-size: 2rem; font-weight: bold; letter-spacing: 0.05em; display: flex; align-items: center; }
     .title img { height: 50px; margin-right: 1rem; }
@@ -33,88 +32,31 @@
       cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
   </style>
-  <style>
-   @keyframes move{0%{background-position:0%}100%{background-position:100%}}
-  </style>
- </head>
- <body>
-  <script>
-   document.addEventListener("DOMContentLoaded",function(){
-  const bar=document.createElement("div");
-  bar.id="progress-bar";
-  bar.style.cssText="position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,red,orange,yellow,green,blue,indigo,violet);background-size:400% 400%;animation:move 2s linear infinite;width:0;z-index:9999";
-  document.body.appendChild(bar);
-  let w=0,interval=setInterval(()=>{if(w>=100){clearInterval(interval);bar.remove();}else{w+=1;bar.style.width=w+'%'}},15);
-});
-  </script>
-  <header>
-   <div class="title">
-    <img src="images/new_logo.png">
-    <span>
-     WCA Hockey League
-    </span>
-   </div>
-   <div class="menu-icon" onclick="toggleMenu()">
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-   </div>
-   <nav id="dropdownMenu">
-    <a href="index.html">
-     Home
-    </a>
-    <a href="league-stats.html">
-     League Stats
-    </a>
-    <a href="owner-application.html">
-     Owner Application
-    </a>
-    <a href="player-signup.html">
-     Player Sign Up
-    </a>
-   </nav>
-  </header>
-  <div class="container">
-   <h2>
-    Skater Master
-   </h2>
-   <div class="loading">
-    <div class="progress-container">
-     <div class="progress-bar">
-     </div>
-    </div>
-    <style>
-     .progress-container {
-  width: 100%;
-  height: 6px;
-  background: #eee;
-  overflow: hidden;
-  margin-top: 1rem;
-}
-.progress-bar {
-  height: 100%;
-  width: 0;
-  background: linear-gradient(to right, #00c6ff, #0072ff);
-  animation: loading 2s infinite;
-}
-@keyframes loading {
-  0% { width: 0; }
-  50% { width: 100%; }
-  100% { width: 0; }
-}
-    </style>
-   </div>
-   <div class="box" id="table-box" style="display:none;">
-   </div>
+</head>
+<body>
+<header>
+  <div class="title"><img src="images/new_logo.png"><span>WCA Hockey League</span></div>
+  <div class="menu-icon" onclick="toggleMenu()">
+    <div></div><div></div><div></div>
   </div>
-  <button class="back-button" onclick="location.href='league-stats.html'">
-   Back to League Stats
-  </button>
-  <script>
-   function toggleMenu() {
+  <nav id="dropdownMenu">
+    <a href="index.html">Home</a>
+    <a href="league-stats.html">League Stats</a>
+    <a href="owner-application.html">Owner Application</a>
+    <a href="player-signup.html">Player Sign Up</a>
+  </nav>
+</header>
+
+<div class="container">
+  <h2>Skater Master</h2>
+  <div class="loading">Loading stats...</div>
+  <div class="box" id="table-box" style="display:none;"></div>
+</div>
+
+<button class="back-button" onclick="location.href='league-stats.html'">Back to League Stats</button>
+
+<script>
+function toggleMenu() {
   var nav = document.getElementById('dropdownMenu');
   nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
 }
@@ -164,6 +106,6 @@ function sortTable(col) {
   const parent = document.querySelector("#stats tbody");
   tbody.forEach(tr => parent.appendChild(tr));
 }
-  </script>
- </body>
+</script>
+</body>
 </html>
