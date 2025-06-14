@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Player Sign Up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 4px solid #333;}
+    .title { font-size: 4rem; font-weight: bold; letter-spacing: 0.1em;}
+    .menu-icon { cursor: pointer; width: 40px; }
+    .menu-icon div { height: 5px; background: #333; margin: 7px 0; border-radius: 2px;}
+    nav { display: none; position: absolute; right: 2rem; top: 5rem; background: #fff; border: 1px solid #ccc; box-shadow: 2px 2px 8px #bbb; border-radius: 8px;}
+    nav a { display: block; padding: 1rem 2rem; text-decoration: none; color: #222;}
+    nav a:hover { background: #eee;}
+    iframe {
+      width: 100%;
+      max-width: 800px;
+      height: 1656px;
+      border: none;
+      background: #fff;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      display: block;
+      margin: 2rem auto;
+    }
+    @media (max-width: 700px) {
+      header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="title">TITLE</div>
+  <div class="menu-icon" onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <nav id="dropdownMenu">
+    <a href="index.html">Home</a>
+    <a href="league-stats.html">League Stats</a>
+    <a href="owner-application.html">Owner Application</a>
+    <a href="player-signup.html">Player Sign Up</a>
+    <a href="staff-directory.html">League Staff Directory</a>
+    <a href="rulebook.html">Rule Book</a>
+  </nav>
+</header>
+
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeFbu61myMeMGuRI8o5TuOmNSIg7mH7ZRePnSDn5ulXY9Zf2g/viewform?embedded=true" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+
+<script>
+function toggleMenu() {
+  var nav = document.getElementById('dropdownMenu');
+  nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
+}
+document.body.addEventListener('click', function(e) {
+  if (!e.target.closest('header')) {
+    document.getElementById('dropdownMenu').style.display = 'none';
+  }
+});
+</script>
+
+</body>
+</html>
