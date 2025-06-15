@@ -81,6 +81,10 @@
    <h2>
     Skater Master
    </h2>
+   <div class="search-wrapper" style="text-align:right;margin:1rem 0;">
+  <input type="text" id="searchInput" placeholder="Search player..." style="padding:6px 12px;border:1px solid #ccc;border-radius:4px;width:220px;">
+</div>
+
    <div class="loading">
     <div class="progress-container">
      <div class="progress-bar">
@@ -164,6 +168,16 @@ function sortTable(col) {
   const parent = document.querySelector("#stats tbody");
   tbody.forEach(tr => parent.appendChild(tr));
 }
-  </script>
+  
+// ---- Live search filter ----
+document.getElementById('searchInput').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#stats tbody tr');
+    rows.forEach(tr => {
+        const name = tr.children[0].textContent.toLowerCase();
+        tr.style.display = name.includes(q) ? '' : 'none';
+    });
+});
+</script>
  </body>
 </html>
