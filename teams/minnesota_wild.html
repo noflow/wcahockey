@@ -1,11 +1,12 @@
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>WCA Hockey League</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
+<meta charset="utf-8"/>
+<title>WCA Hockey League</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
     body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 4px solid #333; }
     .title { font-size: 2rem; font-weight: bold; letter-spacing: 0.1em; }
@@ -18,27 +19,22 @@
   </style>
 </head>
 <body>
-  <header>
-    <div style="display:flex;align-items:center;">
-      <img src="../images/new_logo.png" alt="Logo" style="height:60px;margin-right:1rem;"> <div class="title">WCA Hockey League</div>
-    </div>
-    <div class="menu-icon" onclick="toggleMenu()">
-      <div></div><div></div><div></div>
-    </div>
-    <nav id="dropdownMenu">
-      <a href="../index.html">Home</a>
-      <a href="../league-stats.html">League Stats</a>
-      <a href="../owner-application.html">Owner Application</a>
-      <a href="../player-signup.html">Player Sign Up</a>
-    </nav>
-  </header>
-
-  <main style="padding: 2rem;">
-    <h2 style="text-align:center;">Team Page</h2>
-    <p style="text-align:center;">More team-specific content coming soon.</p>
-  </main>
-
-  <script>
+<header>
+<div style="display:flex;align-items:center;">
+<img alt="Logo" src="../images/new_logo.png" style="height:60px;margin-right:1rem;"/> <div class="title">WCA Hockey League</div>
+</div>
+<div class="menu-icon" onclick="toggleMenu()">
+<div></div><div></div><div></div>
+</div>
+<nav id="dropdownMenu">
+<a href="../index.html">Home</a>
+<a href="../league-stats.html">League Stats</a>
+<a href="../owner-application.html">Owner Application</a>
+<a href="../player-signup.html">Player Sign Up</a>
+</nav>
+</header>
+<main style="padding: 2rem;"><h2 style="text-align:center;">WCA Minnesota Wild</h2><p style="text-align:center;font-size:1.2rem;"><a href="http://wcahockey.com/league-stats.html#standings" style="color:#000;text-decoration:none;">Record: 1 - 2 - 3 (Pts: 5)</a></p><section><h2>Roster</h2><h3>Skaters</h3><ul><li><a href="http://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=J-Kalli">J-Kalli</a></li><li><a href="http://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=OzNasty37">OzNasty37</a></li><li><a href="http://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=TheRealJohnCandy">TheRealJohnCandy</a></li><li><a href="http://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=bus_drivin">bus_drivin</a></li><li><a href="http://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=fuzzytchs">fuzzytchs</a></li><li><a href="http://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=slur1979">slur1979</a></li></ul><h3>Goalies</h3><ul><li><a href="http://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=GrimmMeister28">GrimmMeister28</a></li><li><a href="http://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=d1rtyd1981">d1rtyd1981</a></li></ul></section></main>
+<script>
     function toggleMenu() {
       const nav = document.getElementById("dropdownMenu");
       nav.style.display = nav.style.display === "block" ? "none" : "block";
@@ -49,5 +45,5 @@
       }
     });
   </script>
-</body>
+<button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);cursor:pointer;">Back to Home</button><button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);cursor:pointer;">Back to Home</button></body>
 </html>
