@@ -33,7 +33,7 @@
 <a href="../player-signup.html">Player Sign Up</a>
 </nav>
 </header>
-<main style="padding: 2rem;"><h2 style="text-align:center;">WCA LA KINGS</h2><p style="text-align:center;font-size:1.2rem;"><a href="https://wcahockey.com/league-stats.html#standings" style="color:#000;text-decoration:none;">Record: 10 - 6 - 0 (Pts: 20)</a></p><section><h2>Roster</h2><h3>Skaters</h3><ul><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=JamezZz_11&amp;returnto=teams/la_kings.html">JamezZz_11</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=Jonsyy-&amp;returnto=teams/la_kings.html">Jonsyy-</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=K9%20Evv&amp;returnto=teams/la_kings.html">K9 Evv</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=KoS-RaVe&amp;returnto=teams/la_kings.html">KoS-RaVe</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=MansGame1978&amp;returnto=teams/la_kings.html">MansGame1978</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=RukTheKing&amp;returnto=teams/la_kings.html">RukTheKing</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=Squeegydingers87&amp;returnto=teams/la_kings.html">Squeegydingers87</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=smac_205&amp;returnto=teams/la_kings.html">smac_205</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=squishy_farmer63&amp;returnto=teams/la_kings.html">squishy_farmer63</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=xWilliss-&amp;returnto=teams/la_kings.html">xWilliss-</a></li></ul><h3>Goalies</h3><ul><li><a href="https://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=dTd_Cheeze&amp;returnto=teams/la_kings.html">dTd_Cheeze</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=squishy_farmer63&amp;returnto=teams/la_kings.html">squishy_farmer63</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=xWilliss-&amp;returnto=teams/la_kings.html">xWilliss-</a></li></ul></section></main>
+<main style="padding: 2rem;"><h2 style="text-align:center;">WCA LA KINGS</h2><p id="record" style="text-align:center;font-size:1.2rem;">Loading record...</p><section><h2>Roster</h2><h3>Skaters</h3><ul><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=JamezZz_11&amp;returnto=teams/la_kings.html">JamezZz_11</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=K9%20Evv&amp;returnto=teams/la_kings.html">K9 Evv</a></li></ul><h3>Goalies</h3><ul><li><a href="https://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=dTd_Cheeze&amp;returnto=teams/la_kings.html">dTd_Cheeze</a></li></ul></section></main>
 <script>
     function toggleMenu() {
       const nav = document.getElementById("dropdownMenu");
@@ -45,5 +45,55 @@
       }
     });
   </script>
-<button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);cursor:pointer;">Back to Home</button><button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);cursor:pointer;">Back to Home</button></body>
+<button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);cursor:pointer;">Back to Home</button><script>
+fetch("https://script.google.com/macros/s/AKfycbw63rl_7Lmhrf_m2dLp6KVCY7hqKN912_-Bpc6_1ClHFmayoASTQw0Ng4_S4vnxvQ5MNQ/exec?tab=Standings&json=true")
+  .then(res => res.json())
+  .then(data => {
+    const headers = data.headers.map(h => h.toLowerCase());
+    const idx = headers.indexOf("team");
+    const idxW = headers.indexOf("wins");
+    const idxL = headers.indexOf("losses");
+    const idxOTL = headers.indexOf("otl");
+    const idxPts = headers.indexOf("points");
+
+    const recordMap = {};
+    for (const row of data.rows) {
+      const team = row[idx].toLowerCase().replace("wca", "").replace(/\s+/g, "");
+      recordMap[team] = `${row[idxW]} - ${row[idxL]} - ${row[idxOTL]} (Pts: ${row[idxPts]})`;
+    }
+
+    const teamNameRaw = document.querySelector("h2")?.textContent || "";
+    const teamKey = teamNameRaw.toLowerCase().replace("wca", "").replace(/\s+/g, "");
+    const record = recordMap[teamKey] || "0 - 0 - 0 (Pts: 0)";
+    document.getElementById("record").textContent = `Record: ${record}`;
+  })
+  .catch(err => {
+    console.error("❌ Failed to fetch standings", err);
+    document.getElementById("record").textContent = "Record: N/A";
+  });
+</script><button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);cursor:pointer;">Back to Home</button><script>
+fetch("https://script.google.com/macros/s/AKfycbw63rl_7Lmhrf_m2dLp6KVCY7hqKN912_-Bpc6_1ClHFmayoASTQw0Ng4_S4vnxvQ5MNQ/exec?tab=Standings&json=true")
+  .then(res => res.json())
+  .then(data => {
+    const headers = data.headers.map(h => h.toLowerCase());
+    const idxTeam = headers.indexOf("team");
+    const idxW    = headers.indexOf("wins");
+    const idxL    = headers.indexOf("losses");
+    const idxOTL  = headers.indexOf("otl");
+    const idxPts  = headers.indexOf("points");
+
+    const recordMap = {};
+    for (const row of data.rows) {
+      const t = row[idxTeam].toLowerCase().replace("wca", "").replace(/\s+/g, "");
+      recordMap[t] = `${row[idxW]} - ${row[idxL]} - ${row[idxOTL]} (Pts: ${row[idxPts]})`;
+    }
+
+    const key = "kingsla";
+    document.getElementById("record").textContent = "Record: " + (recordMap[key] || "N/A");
+  })
+  .catch(err => {
+    console.error("❌ Failed to fetch standings", err);
+    document.getElementById("record").textContent = "Record: N/A";
+  });
+</script></body>
 </html>
