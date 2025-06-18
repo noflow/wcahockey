@@ -33,7 +33,7 @@
 <a href="../player-signup.html">Player Sign Up</a>
 </nav>
 </header>
-<main style="padding: 2rem;"><h2 id="team-name" style="text-align:center;">WCA Vegas Golden Knights</h2><p id="team-record" style="text-align:center;font-size:1.2rem;white-space:pre-line;">Loading record…</p><section><h2>Roster</h2><h3>Skaters</h3><ul><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=GHOST%20I96I&amp;returnto=teams/vegas_golden_knights.html">GHOST I96I</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=Hudz_85&amp;returnto=teams/vegas_golden_knights.html">Hudz_85</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=IxDEATHROWxI&amp;returnto=teams/vegas_golden_knights.html">IxDEATHROWxI</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=NerosDecay22&amp;returnto=teams/vegas_golden_knights.html">NerosDecay22</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=SlapTimeNHL&amp;returnto=teams/vegas_golden_knights.html">SlapTimeNHL</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=TheGodfatherTTV&amp;returnto=teams/vegas_golden_knights.html">TheGodfatherTTV</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=ttvWealthy_Bacon&amp;returnto=teams/vegas_golden_knights.html">ttvWealthy_Bacon</a></li></ul><h3>Goalies</h3><ul><li><a href="https://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=Bosa%20x%2031&amp;returnto=teams/vegas_golden_knights.html">Bosa x 31</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=GHOST%20I96I&amp;returnto=teams/vegas_golden_knights.html">GHOST I96I</a></li></ul></section></main>
+<main style="padding: 2rem;"><h2 style="text-align:center;">WCA Vegas Golden Knights</h2><p id="record-wrap" style="text-align:center;font-size:1.2rem;"><span id="record-value">Loading record…</span></p><section><h2>Roster</h2><h3>Skater</h3><ul><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=GHOST%20I96I&amp;returnto=teams/vegas_golden_knights.html">GHOST I96I</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=Hudz_85&amp;returnto=teams/vegas_golden_knights.html">Hudz_85</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=IxDEATHROWxI&amp;returnto=teams/vegas_golden_knights.html">IxDEATHROWxI</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=NerosDecay22&amp;returnto=teams/vegas_golden_knights.html">NerosDecay22</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=SlapTimeNHL&amp;returnto=teams/vegas_golden_knights.html">SlapTimeNHL</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=TheGodfatherTTV&amp;returnto=teams/vegas_golden_knights.html">TheGodfatherTTV</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=ttvWealthy_Bacon&amp;returnto=teams/vegas_golden_knights.html">ttvWealthy_Bacon</a></li></ul><h3>Goalie</h3><ul><li><a href="https://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=Bosa%20x%2031&amp;returnto=teams/vegas_golden_knights.html">Bosa x 31</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=GHOST%20I96I&amp;returnto=teams/vegas_golden_knights.html">GHOST I96I</a></li></ul></section></main>
 <script>
     function toggleMenu() {
       const nav = document.getElementById("dropdownMenu");
@@ -45,30 +45,24 @@
       }
     });
   </script>
-<button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);cursor:pointer;">Back to Home</button><button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);cursor:pointer;">Back to Home</button><script id="record-script">fetch('https://script.google.com/macros/s/AKfycbw63rl_7Lmhrf_m2dLp6KVCY7hqKN912_-Bpc6_1ClHFmayoASTQw0Ng4_S4vnxvQ5MNQ/exec?tab=Standings&json=true')
-  .then(r => r.json())
-  .then(data => {
-    const h = data.headers.map(x => x.toLowerCase());
-    const idxTeam = h.indexOf('team');
-    const idxW = h.indexOf('wins');
-    const idxL = h.indexOf('losses');
-    const idxOTL = h.indexOf('otl');
-    const idxPts = h.indexOf('points');
-
-    const map = {};
-    for (const row of data.rows) {
-      const key = row[idxTeam].toLowerCase().replace('wca', '').replace(/\s+/g, '');
-      map[key] = `${row[idxW]} - ${row[idxL]} - ${row[idxOTL]} (Pts: ${row[idxPts]})`;
-    }
-
-    const keyThis = 'goldenknightsvegas';
-    const recTxt = map[keyThis] || 'N/A';
-    const tgt = document.getElementById('team-record');
-    if (tgt) tgt.textContent = 'Record: ' + recTxt;
-  })
-  .catch(err => {
-    console.error('Standings fetch error', err);
-    const tgt = document.getElementById('team-record');
-    if (tgt) tgt.textContent = 'Record: N/A';
-  });</script></body>
+<button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);cursor:pointer;">Back to Home</button><button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.15);cursor:pointer;">Back to Home</button><script>(function() {
+  fetch('https://script.google.com/macros/s/AKfycbw63rl_7Lmhrf_m2dLp6KVCY7hqKN912_-Bpc6_1ClHFmayoASTQw0Ng4_S4vnxvQ5MNQ/exec?tab=Standings&json=true')
+    .then(r => r.json())
+    .then(d => {
+      const h = d.headers.map(x=>x.toLowerCase());
+      const ti = h.indexOf('team'), wi=h.indexOf('wins'), li=h.indexOf('losses');
+      const oi=h.indexOf('otl'), pi=h.indexOf('points');
+      const map={};
+      d.rows.forEach(r=> {
+        const key=r[ti].toLowerCase().replace('wca','').replace(/\s+/g,'');
+        map[key]=`${r[wi]}‑${r[li]}‑${r[oi]} (Pts: ${r[pi]})`;
+      });
+      const key='goldenknightsvegas';
+      document.getElementById('record-value').textContent = 'Record: ' + (map[key]||'N/A');
+    })
+    .catch(()=>document.getElementById('record-value').textContent='Record: N/A')
+    .finally(()=>{ // remove script to guarantee no re‑runs
+      const s=document.currentScript; if(s) s.remove();
+    });
+})();</script></body>
 </html>
