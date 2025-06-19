@@ -1,0 +1,26 @@
+name: Generate Latest Scores
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Recreate google_credentials.json from secret
+      run: echo "${{ secrets.GOOGLE_CREDS_BASE64 }}" | base64 -d > google_credentials.json
+
+    - name: Install dependencies
+      run: pip install google-api-python-client google-auth
+
+    - name: Run the script
+      run: python generate_latest_scores.py
