@@ -19,7 +19,7 @@ rows = result.get('values', [])
 games = [r for r in rows if len(r) > 10 and r[3] and r[6] and r[8] and r[10]]  # note: r[8] is now Team 2 Name
 
 # Last 8 games
-last_8 = games[-8:]
+last_20 = games[-20:]
 
 def logo(name):
     return f"images/ticker/{name.lower().replace(' ', '_')}.png"
@@ -46,4 +46,4 @@ for row in last_8:
 with open("latest_scores.json", "w") as f:
     json.dump(output, f, indent=2)
 
-print("✅ latest_scores.json updated with last 8 games.")
+print("✅ latest_scores.json updated with last 20 games.")
