@@ -12,35 +12,31 @@
       --button-size: 140px;
     }
     body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
-    #score-ticker {
-      width: 100%;
-      background-color: #222;
-      color: white;
-      padding: 10px 0;
-      overflow: hidden;
-      position: relative;
-      font-size: 1rem;
-      font-weight: bold;
-      white-space: nowrap;
-    }
-
-    #ticker-track {
-      display: inline-block;
-      white-space: nowrap;
-      animation: scroll-left 36s linear infinite;
-      will-change: transform;
-    }
-
-    @keyframes scroll-left {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    #ticker-content, #ticker-content-duplicate {
-      display: inline;
-    }
-
     
+#score-ticker {
+  width: 100%;
+  background-color: #222;
+  color: white;
+  padding: 10px 0;
+  overflow: hidden;
+  position: relative;
+  font-size: 1rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+#ticker-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scroll-left 36s linear infinite;
+  will-change: transform;
+}
+
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
       background-color: #222;
       color: white;
       padding: 10px 0;
@@ -53,7 +49,7 @@
     #ticker-content {
       display: inline-block;
       white-space: nowrap;
-      animation: scroll-left 36s linear infinite;
+      animation: scroll-left 25s linear infinite;
     }
 
     @keyframes scroll-left {
@@ -109,10 +105,7 @@
 
 
 <div id="score-ticker">
-  <div id="ticker-track">
-    <div id="ticker-content"></div>
-    <div id="ticker-content-duplicate"></div>
-  </div>
+  <div id="ticker-track"></div>
 </div>
 
 
@@ -176,8 +169,6 @@ async function loadScores() {
 }
 
 
-
-
 window.onload = loadScores;
 
 async function loadScores() {
@@ -185,11 +176,15 @@ async function loadScores() {
     const response = await fetch('latest_scores.json');
     const scores = await response.json();
 
-    const content = document.getElementById('ticker-content');
-    const contentDup = document.getElementById('ticker-content-duplicate');
-    content.innerHTML = "";
-    contentDup.innerHTML = "";
+    const track = document.getElementById('ticker-track');
+    track.innerHTML = ""; // Clear existing track
 
+    const content1 = document.createElement('div');
+    const content2 = document.createElement('div');
+    content1.style.display = "inline";
+    content2.style.display = "inline";
+
+    // Populate first run of content
     scores.forEach((game, index) => {
       const wrapper = document.createElement('span');
       wrapper.style.display = "inline-flex";
@@ -203,107 +198,34 @@ async function loadScores() {
         <span style="font-weight:bold;">${game.team2.score}</span>
       `;
 
-      content.appendChild(wrapper);
+      content1.appendChild(wrapper);
 
       if (index < scores.length - 1) {
         const sep = document.createElement('span');
         sep.textContent = " • ";
         sep.style.margin = "0 1.5rem";
-        content.appendChild(sep);
+        content1.appendChild(sep);
       }
     });
 
-    // Add 3 blank spacers before duplicate
+    // Insert 3-game-wide spacer
     for (let i = 0; i < 3; i++) {
       const spacer = document.createElement('span');
       spacer.style.display = "inline-block";
-      spacer.style.width = "150px";  // Approx. width of 1 game block
+      spacer.style.width = "150px";
       spacer.innerHTML = "&nbsp;";
-      contentDup.appendChild(spacer);
+      content1.appendChild(spacer);
     }
 
-    // Clone all original ticker nodes for duplication
-    [...content.childNodes].forEach(node => {
-      contentDup.appendChild(node.cloneNode(true));
-    });
+    // Duplicate original content after spacer
+    content2.innerHTML = content1.innerHTML;
 
+    // Append both content blocks to ticker track
+    track.appendChild(content1);
+    track.appendChild(content2);
   } catch (error) {
     console.error("Failed to load scores:", error);
-    document.getElementById('ticker-content').innerText = "Failed to load scores.";
-  }
-}
-
-
-async function loadScores() {
-  try {
-    const response = await fetch('latest_scores.json');
-    const scores = await response.json();
-
-    const ticker = document.getElementById('ticker-content');
-    ticker.innerHTML = ""; // Clear ticker
-
-    scores.forEach((game, index) => {
-      const wrapper = document.createElement('span');
-      wrapper.style.display = "inline-flex";
-      wrapper.style.alignItems = "center";
-      wrapper.style.marginRight = "2rem";
-
-      wrapper.innerHTML = `
-        <img src="${game.team1.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
-        <span style="margin-right:12px;font-weight:bold;">${game.team1.score}</span>
-        <img src="${game.team2.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
-        <span style="font-weight:bold;">${game.team2.score}</span>
-      `;
-
-      ticker.appendChild(wrapper);
-
-      if (index < scores.length - 1) {
-        const separator = document.createElement('span');
-        separator.textContent = " • ";
-        separator.style.margin = "0 1.5rem";
-        ticker.appendChild(separator);
-      }
-    });
-  } catch (error) {
-    console.error("Failed to load scores:", error);
-    document.getElementById('ticker-content').innerText = "Failed to load scores.";
-  }
-}
-
-
-async function loadScores() {
-  try {
-    const response = await fetch('latest_scores.json');
-    const scores = await response.json();
-
-    const ticker = document.getElementById('ticker-content');
-    ticker.innerHTML = ""; // Clear it
-
-    scores.forEach((game, index) => {
-      const wrapper = document.createElement('span');
-      wrapper.style.display = "inline-flex";
-      wrapper.style.alignItems = "center";
-      wrapper.style.marginRight = "2rem";
-
-      wrapper.innerHTML = `
-        <img src="${game.team1.logo}" alt="${game.team1.name}" style="height:24px;margin-right:6px;">
-        <strong style="margin-right:10px;">${game.team1.score}</strong>
-        <img src="${game.team2.logo}" alt="${game.team2.name}" style="height:24px;margin-right:6px;">
-        <strong>${game.team2.score}</strong>
-      `;
-
-      ticker.appendChild(wrapper);
-
-      if (index < scores.length - 1) {
-        const separator = document.createElement('span');
-        separator.textContent = " • ";
-        separator.style.marginRight = "2rem";
-        ticker.appendChild(separator);
-      }
-    });
-  } catch (error) {
-    console.error("Failed to load scores:", error);
-    document.getElementById('ticker-content').innerText = "Failed to load scores.";
+    document.getElementById('ticker-track').innerText = "Failed to load scores.";
   }
 }
 
