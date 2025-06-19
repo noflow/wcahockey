@@ -37,13 +37,9 @@
   white-space: nowrap;
 }
 
-#ticker-track.animate {
-  animation: scroll-left var(--scroll-duration, 80s) linear infinite;
-  will-change: transform;
-}
 
-@keyframes scroll-left {
-  0% { transform: translateX(0); }
+
+
   100% { transform: translateX(-50%); }
 }
 
@@ -56,16 +52,9 @@
       font-weight: bold;
     }
 
-    #ticker-content {
-      display: inline-block;
-      white-space: nowrap;
-      animation: scroll-left 25s linear infinite;
-    }
+    
 
-    @keyframes scroll-left {
-      from {
-        transform: translateX(100%);
-      }
+    
       to {
         transform: translateX(-100%);
       }
@@ -236,13 +225,7 @@ document.body.addEventListener('click', function(e) {
   }
 });
 
-async function loadScores() {
-  try {
-    const response = await fetch('latest_scores.json');
-    const scores = await response.json();
-
-    const formattedScores = scores.map(game => {
-      return `${game.date} - ${game.team1.name} ${game.team1.score} : ${game.team2.score} ${game.team2.name}`;
+- ${game.team1.name} ${game.team1.score} : ${game.team2.score} ${game.team2.name}`;
     }).join(" ⚬ ");
 
     document.getElementById('ticker-content').innerText = formattedScores;
@@ -253,21 +236,9 @@ async function loadScores() {
 }
 
 
-window.onload = loadScores;
 
-async function loadScores() {
-  const cacheKey = "cached_scores_v1";
-  const cacheTTL = 1000 * 60 * 5; // 5 minutes
-  let scores = [];
 
-  try {
-    const cached = localStorage.getItem(cacheKey);
-    const cachedTime = localStorage.getItem(cacheKey + "_time");
-    const now = Date.now();
-
-    if (cached && cachedTime && now - parseInt(cachedTime) < cacheTTL) {
-      scores = JSON.parse(cached);
-    } else {
+else {
       const response = await fetch('latest_scores.json');
       scores = await response.json();
       localStorage.setItem(cacheKey, JSON.stringify(scores));
