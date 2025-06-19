@@ -7,9 +7,9 @@
       "logo": "images/wca_carolina_hurricanes.png"
     },
     "team2": {
-      "name": "60443",
+      "name": "WCA Vancouver Canucks",
       "score": "3",
-      "logo": "images/60443.png"
+      "logo": "images/wca_vancouver_canucks.png"
     }
   },
   {
@@ -20,9 +20,9 @@
       "logo": "images/wca_vancouver_canucks.png"
     },
     "team2": {
-      "name": "218941",
+      "name": "Ottawa Senators WCA",
       "score": "1",
-      "logo": "images/218941.png"
+      "logo": "images/ottawa_senators_wca.png"
     }
   },
   {
@@ -33,9 +33,9 @@
       "logo": "images/wca_vancouver_canucks.png"
     },
     "team2": {
-      "name": "206910",
+      "name": "WCA Nashville Predators",
       "score": "8",
-      "logo": "images/206910.png"
+      "logo": "images/wca_nashville_predators.png"
     }
   },
   {
@@ -46,9 +46,9 @@
       "logo": "images/wca_minnesota_wild.png"
     },
     "team2": {
-      "name": "218941",
+      "name": "Ottawa Senators WCA",
       "score": "5",
-      "logo": "images/218941.png"
+      "logo": "images/ottawa_senators_wca.png"
     }
   },
   {
@@ -59,9 +59,9 @@
       "logo": "images/wca_minnesota_wild.png"
     },
     "team2": {
-      "name": "219183",
+      "name": "WCA Montreal Canadiens",
       "score": "6",
-      "logo": "images/219183.png"
+      "logo": "images/wca_montreal_canadiens.png"
     }
   },
   {
@@ -72,9 +72,9 @@
       "logo": "images/wca_new_jersey_devils.png"
     },
     "team2": {
-      "name": "206910",
+      "name": "WCA Nashville Predators",
       "score": "3",
-      "logo": "images/206910.png"
+      "logo": "images/wca_nashville_predators.png"
     }
   },
   {
@@ -85,9 +85,9 @@
       "logo": "images/wca_new_jersey_devils.png"
     },
     "team2": {
-      "name": "219183",
+      "name": "WCA Montreal Canadiens",
       "score": "3",
-      "logo": "images/219183.png"
+      "logo": "images/wca_montreal_canadiens.png"
     }
   },
   {
@@ -98,9 +98,9 @@
       "logo": "images/wca_carolina_hurricanes.png"
     },
     "team2": {
-      "name": "218941",
+      "name": "Ottawa Senators WCA",
       "score": "7",
-      "logo": "images/218941.png"
+      "logo": "images/ottawa_senators_wca.png"
     }
   }
 ]
