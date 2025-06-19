@@ -3,7 +3,7 @@
     "date": "2025-06-17 17:52",
     "team1": {
       "name": "WCA Carolina Hurricanes",
-      "score": "0",
+      "score": "5",
       "logo": "images/ticker/wca_carolina_hurricanes.png"
     },
     "team2": {
@@ -16,7 +16,7 @@
     "date": "2025-06-17 18:53",
     "team1": {
       "name": "WCA Vancouver Canucks",
-      "score": "0",
+      "score": "6",
       "logo": "images/ticker/wca_vancouver_canucks.png"
     },
     "team2": {
@@ -42,7 +42,7 @@
     "date": "2025-06-17 19:32",
     "team1": {
       "name": "WCA Minnesota Wild",
-      "score": "0",
+      "score": "4",
       "logo": "images/ticker/wca_minnesota_wild.png"
     },
     "team2": {
@@ -55,7 +55,7 @@
     "date": "2025-06-17 19:07",
     "team1": {
       "name": "WCA Minnesota Wild",
-      "score": "0",
+      "score": "3",
       "logo": "images/ticker/wca_minnesota_wild.png"
     },
     "team2": {
@@ -68,7 +68,7 @@
     "date": "2025-06-17 18:47",
     "team1": {
       "name": "WCA New Jersey Devils",
-      "score": "0",
+      "score": "5",
       "logo": "images/ticker/wca_new_jersey_devils.png"
     },
     "team2": {
@@ -81,7 +81,7 @@
     "date": "2025-06-17 17:55",
     "team1": {
       "name": "WCA New Jersey Devils",
-      "score": "0",
+      "score": "2",
       "logo": "images/ticker/wca_new_jersey_devils.png"
     },
     "team2": {
@@ -94,7 +94,7 @@
     "date": "2025-06-17 23:20",
     "team1": {
       "name": "WCA Carolina Hurricanes",
-      "score": "0",
+      "score": "3",
       "logo": "images/ticker/wca_carolina_hurricanes.png"
     },
     "team2": {
