@@ -204,16 +204,29 @@ async function loadScores() {
       `;
 
       content.appendChild(wrapper);
-      contentDup.appendChild(wrapper.cloneNode(true));
 
       if (index < scores.length - 1) {
         const sep = document.createElement('span');
         sep.textContent = " • ";
         sep.style.margin = "0 1.5rem";
         content.appendChild(sep);
-        contentDup.appendChild(sep.cloneNode(true));
       }
     });
+
+    // Add 3 blank spacers before duplicate
+    for (let i = 0; i < 3; i++) {
+      const spacer = document.createElement('span');
+      spacer.style.display = "inline-block";
+      spacer.style.width = "150px";  // Approx. width of 1 game block
+      spacer.innerHTML = "&nbsp;";
+      contentDup.appendChild(spacer);
+    }
+
+    // Clone all original ticker nodes for duplication
+    [...content.childNodes].forEach(node => {
+      contentDup.appendChild(node.cloneNode(true));
+    });
+
   } catch (error) {
     console.error("Failed to load scores:", error);
     document.getElementById('ticker-content').innerText = "Failed to load scores.";
