@@ -26,7 +26,7 @@
     #ticker-content {
       display: inline-block;
       white-space: nowrap;
-      animation: scroll-left 25s linear infinite;
+      animation: scroll-left 36s linear infinite;
     }
 
     @keyframes scroll-left {
@@ -144,7 +144,45 @@ async function loadScores() {
 }
 
 
+
 window.onload = loadScores;
+
+async function loadScores() {
+  try {
+    const response = await fetch('latest_scores.json');
+    const scores = await response.json();
+
+    const ticker = document.getElementById('ticker-content');
+    ticker.innerHTML = ""; // Clear ticker
+
+    scores.forEach((game, index) => {
+      const wrapper = document.createElement('span');
+      wrapper.style.display = "inline-flex";
+      wrapper.style.alignItems = "center";
+      wrapper.style.marginRight = "2rem";
+
+      wrapper.innerHTML = `
+        <img src="${game.team1.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
+        <span style="margin-right:12px;font-weight:bold;">${game.team1.score}</span>
+        <img src="${game.team2.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
+        <span style="font-weight:bold;">${game.team2.score}</span>
+      `;
+
+      ticker.appendChild(wrapper);
+
+      if (index < scores.length - 1) {
+        const separator = document.createElement('span');
+        separator.textContent = " • ";
+        separator.style.margin = "0 1.5rem";
+        ticker.appendChild(separator);
+      }
+    });
+  } catch (error) {
+    console.error("Failed to load scores:", error);
+    document.getElementById('ticker-content').innerText = "Failed to load scores.";
+  }
+}
+
 
 async function loadScores() {
   try {
