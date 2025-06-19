@@ -143,7 +143,45 @@ async function loadScores() {
   }
 }
 
+
 window.onload = loadScores;
+
+async function loadScores() {
+  try {
+    const response = await fetch('latest_scores.json');
+    const scores = await response.json();
+
+    const ticker = document.getElementById('ticker-content');
+    ticker.innerHTML = ""; // Clear it
+
+    scores.forEach((game, index) => {
+      const wrapper = document.createElement('span');
+      wrapper.style.display = "inline-flex";
+      wrapper.style.alignItems = "center";
+      wrapper.style.marginRight = "2rem";
+
+      wrapper.innerHTML = `
+        <img src="${game.team1.logo}" alt="${game.team1.name}" style="height:24px;margin-right:6px;">
+        <strong style="margin-right:10px;">${game.team1.score}</strong>
+        <img src="${game.team2.logo}" alt="${game.team2.name}" style="height:24px;margin-right:6px;">
+        <strong>${game.team2.score}</strong>
+      `;
+
+      ticker.appendChild(wrapper);
+
+      if (index < scores.length - 1) {
+        const separator = document.createElement('span');
+        separator.textContent = " • ";
+        separator.style.marginRight = "2rem";
+        ticker.appendChild(separator);
+      }
+    });
+  } catch (error) {
+    console.error("Failed to load scores:", error);
+    document.getElementById('ticker-content').innerText = "Failed to load scores.";
+  }
+}
+
 </script>
 </body>
 </html>
