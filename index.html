@@ -28,7 +28,11 @@
 #ticker-track {
   display: inline-block;
   white-space: nowrap;
-  animation: scroll-left 36s linear infinite;
+  /* No animation until .animate class is added */
+}
+
+#ticker-track.animate {
+  animation: scroll-left var(--scroll-duration, 36s) linear infinite;
   will-change: transform;
 }
 
@@ -103,11 +107,7 @@
 </head>
 <body>
 
-
-<div id="score-ticker">
-  <div id="ticker-track"></div>
-</div>
-
+<div id="score-ticker"><div id="ticker-track"></div></div>
 
 <header>
   <div style="display:flex;align-items:center;">
@@ -177,55 +177,57 @@ async function loadScores() {
     const scores = await response.json();
 
     const track = document.getElementById('ticker-track');
-    track.innerHTML = ""; // Clear existing track
+    track.innerHTML = ""; // Clear previous content
+    track.classList.remove('animate'); // Reset animation
 
-    const content1 = document.createElement('div');
-    const content2 = document.createElement('div');
-    content1.style.display = "inline";
-    content2.style.display = "inline";
+    const segment = document.createElement('div');
+    segment.style.display = "inline";
 
-    // Populate first run of content
+    // Build one segment of games
     scores.forEach((game, index) => {
-      const wrapper = document.createElement('span');
-      wrapper.style.display = "inline-flex";
-      wrapper.style.alignItems = "center";
-      wrapper.style.marginRight = "2rem";
+      const wrap = document.createElement('span');
+      wrap.style.display = "inline-flex";
+      wrap.style.alignItems = "center";
+      wrap.style.marginRight = "2rem";
 
-      wrapper.innerHTML = `
+      wrap.innerHTML = `
         <img src="${game.team1.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
         <span style="margin-right:12px;font-weight:bold;">${game.team1.score}</span>
         <img src="${game.team2.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
         <span style="font-weight:bold;">${game.team2.score}</span>
       `;
 
-      content1.appendChild(wrapper);
+      segment.appendChild(wrap);
 
       if (index < scores.length - 1) {
         const sep = document.createElement('span');
         sep.textContent = " • ";
         sep.style.margin = "0 1.5rem";
-        content1.appendChild(sep);
+        segment.appendChild(sep);
       }
     });
 
-    // Insert 3-game-wide spacer
+    // Append segment
+    track.appendChild(segment.cloneNode(true));
+
+    // Add 3 spacers
     for (let i = 0; i < 3; i++) {
       const spacer = document.createElement('span');
       spacer.style.display = "inline-block";
       spacer.style.width = "150px";
       spacer.innerHTML = "&nbsp;";
-      content1.appendChild(spacer);
+      track.appendChild(spacer);
     }
 
-    // Duplicate original content after spacer
-    content2.innerHTML = content1.innerHTML;
+    // Duplicate segment again
+    track.appendChild(segment.cloneNode(true));
 
-    // Append both content blocks to ticker track
-    track.appendChild(content1);
-    track.appendChild(content2);
-  } catch (error) {
-    console.error("Failed to load scores:", error);
-    document.getElementById('ticker-track').innerText = "Failed to load scores.";
+    // Force reflow then start animation
+    void track.offsetWidth;
+    track.classList.add('animate');
+  } catch (err) {
+    console.error(err);
+    document.getElementById('score-ticker').textContent = "Failed to load scores.";
   }
 }
 
