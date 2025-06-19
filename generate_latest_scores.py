@@ -26,7 +26,7 @@ def logo(name):
 
 # Build JSON structure
 output = []
-for row in last_8:
+for row in last_20:
     game = {
         "date": row[1],
         "team1": {
