@@ -1,14 +1,17 @@
 name: Generate Latest Scores
 
 on:
-  workflow_dispatch:  # Allows manual triggering
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repo
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -24,3 +27,11 @@ jobs:
 
     - name: Run the script
       run: python generate_latest_scores.py
+
+    - name: Commit and push latest_scores.json
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git add latest_scores.json
+        git commit -m "🔄 Auto-update latest_scores.json from workflow" || echo "No changes to commit"
+        git push
