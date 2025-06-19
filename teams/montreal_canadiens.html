@@ -1,11 +1,12 @@
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>WCA Hockey League</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
+<meta charset="utf-8"/>
+<title>WCA Hockey League</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
     body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 4px solid #333; }
     .title { font-size: 2rem; font-weight: bold; letter-spacing: 0.1em; }
@@ -18,27 +19,22 @@
   </style>
 </head>
 <body>
-  <header>
-    <div style="display:flex;align-items:center;">
-      <img src="../images/new_logo.png" alt="Logo" style="height:60px;margin-right:1rem;"> <div class="title">WCA Hockey League</div>
-    </div>
-    <div class="menu-icon" onclick="toggleMenu()">
-      <div></div><div></div><div></div>
-    </div>
-    <nav id="dropdownMenu">
-      <a href="../index.html">Home</a>
-      <a href="../league-stats.html">League Stats</a>
-      <a href="../owner-application.html">Owner Application</a>
-      <a href="../player-signup.html">Player Sign Up</a>
-    </nav>
-  </header>
-
-  <main style="padding: 2rem;">
-    <h2 style="text-align:center;">Team Page</h2>
-    <p style="text-align:center;">More team-specific content coming soon.</p>
-  </main>
-
-  <script>
+<header>
+<div style="display:flex;align-items:center;">
+<img alt="Logo" src="../images/new_logo.png" style="height:60px;margin-right:1rem;"/> <div class="title">WCA Hockey League</div>
+</div>
+<div class="menu-icon" onclick="toggleMenu()">
+<div></div><div></div><div></div>
+</div>
+<nav id="dropdownMenu">
+<a href="../index.html">Home</a>
+<a href="../league-stats.html">League Stats</a>
+<a href="../owner-application.html">Owner Application</a>
+<a href="../player-signup.html">Player Sign Up</a>
+</nav>
+</header>
+<main style="padding: 2rem;"><h2 style="text-align:center;">WCA Montreal Canadiens</h2><div style="text-align:center;font-size:1.2rem;">Record: <span id="dynamic-standing">Loading...</span></div><section><h2>Roster</h2><h3>Skaters</h3><ul><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=DirtyDuRagz&amp;returnto=teams/montreal_canadiens.html">DirtyDuRagz</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=Don_Zakzouk&amp;returnto=teams/montreal_canadiens.html">Don_Zakzouk</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=HellsFyre&amp;returnto=teams/montreal_canadiens.html">HellsFyre</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=Selbie2939&amp;returnto=teams/montreal_canadiens.html">Selbie2939</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=Slick_112&amp;returnto=teams/montreal_canadiens.html">Slick_112</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=jcosp723&amp;returnto=teams/montreal_canadiens.html">jcosp723</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Skater%20Master&amp;player=thebawskill&amp;returnto=teams/montreal_canadiens.html">thebawskill</a></li></ul><h3>Goalies</h3><ul><li><a href="https://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=Speeedbag&amp;returnto=teams/montreal_canadiens.html">Speeedbag</a></li><li><a href="https://wcahockey.com/playercard.html?tab=Goalie%20Master&amp;player=Unhinged_Saint&amp;returnto=teams/montreal_canadiens.html">Unhinged_Saint</a></li></ul></section></main>
+<script>
     function toggleMenu() {
       const nav = document.getElementById("dropdownMenu");
       nav.style.display = nav.style.display === "block" ? "none" : "block";
@@ -49,5 +45,55 @@
       }
     });
   </script>
-</body>
+<button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);cursor:pointer;">Back to Home</button><script>
+fetch("https://script.google.com/macros/s/AKfycbw63rl_7Lmhrf_m2dLp6KVCY7hqKN912_-Bpc6_1ClHFmayoASTQw0Ng4_S4vnxvQ5MNQ/exec?tab=Standings&json=true")
+  .then(res => res.json())
+  .then(data => {
+    const headers = data.headers.map(h => h.toLowerCase());
+    const idx = headers.indexOf("team");
+    const idxW = headers.indexOf("wins");
+    const idxL = headers.indexOf("losses");
+    const idxOTL = headers.indexOf("otl");
+    const idxPts = headers.indexOf("points");
+
+    const recordMap = {};
+    for (const row of data.rows) {
+      const team = row[idx].toLowerCase().replace("wca", "").replace(/\s+/g, "");
+      recordMap[team] = `${row[idxW]} - ${row[idxL]} - ${row[idxOTL]} (Pts: ${row[idxPts]})`;
+    }
+
+    const teamNameRaw = document.querySelector("h2")?.textContent || "";
+    const teamKey = teamNameRaw.toLowerCase().replace("wca", "").replace(/\s+/g, "");
+    const record = recordMap[teamKey] || "0 - 0 - 0 (Pts: 0)";
+    document.getElementById("record").textContent = `Record: ${record}`;
+  })
+  .catch(err => {
+    console.error("❌ Failed to fetch standings", err);
+    document.getElementById("record").textContent = "Record: N/A";
+  });
+</script><button onclick="location.href='../index.html'" style="position:fixed;bottom:30px;right:30px;background:#222;color:#fff;border:none;padding:12px 20px;font-size:1rem;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,.2);cursor:pointer;">Back to Home</button><script>
+document.addEventListener("DOMContentLoaded", () => {
+  const TEAM_NAME    = "WCA Montreal Canadiens";
+  const standingsURL = "https://script.google.com/macros/s/AKfycbw63rl_7Lmhrf_m2dLp6KVCY7hqKN912_-Bpc6_1ClHFmayoASTQw0Ng4_S4vnxvQ5MNQ/exec?tab=Standings&json=true";
+
+  fetch(standingsURL)
+    .then(r => r.json())
+    .then(data => {
+      const idx = Object.fromEntries(data.headers.map((h,i)=>[h.trim().toLowerCase(),i]));
+      const row = data.rows.find(row => row[idx.team].trim().toLowerCase() === TEAM_NAME.toLowerCase());
+      const el  = document.getElementById("dynamic-standing");
+      if (!el) return;
+      if (row) {
+        const w=row[idx.wins], l=row[idx.losses], o=row[idx.otl], p=row[idx.points];
+        el.innerText = `${w} - ${l} - ${o} (Pts: ${p})`;
+      } else {
+        el.innerText = "N/A";
+      }
+    })
+    .catch(() => {
+      const el = document.getElementById("dynamic-standing");
+      if (el) el.innerText = "N/A";
+    });
+});
+</script></body>
 </html>

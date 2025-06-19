@@ -113,7 +113,11 @@ fetch(`https://script.google.com/macros/s/AKfycbw63rl_7Lmhrf_m2dLp6KVCY7hqKN912_
     if (!data.found) {
       card.innerHTML = `<h2>Player not found</h2>`;
     } else {
-      card.innerHTML = data.card + `<br><a class="back-button" href="${tab.includes('Goalie') ? 'goalie-stats.html' : 'player-stats.html'}">← Back</a>`;
+      
+    const returnto = params.get('returnto');
+    const backLink = returnto ? returnto : (tab.includes('Goalie') ? 'goalie-stats.html' : 'player-stats.html');
+    card.innerHTML = data.card + `<br><a class="back-button" href="${backLink}">← Back</a>`;
+    
     }
   })
   .catch(() => {

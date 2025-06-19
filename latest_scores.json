@@ -1,0 +1,106 @@
+[
+  {
+    "date": "2025-06-17 17:52",
+    "team1": {
+      "name": "WCA Carolina Hurricanes",
+      "score": "5",
+      "logo": "images/ticker/wca_carolina_hurricanes.png"
+    },
+    "team2": {
+      "name": "WCA Vancouver Canucks",
+      "score": "3",
+      "logo": "images/ticker/wca_vancouver_canucks.png"
+    }
+  },
+  {
+    "date": "2025-06-17 18:53",
+    "team1": {
+      "name": "WCA Vancouver Canucks",
+      "score": "6",
+      "logo": "images/ticker/wca_vancouver_canucks.png"
+    },
+    "team2": {
+      "name": "Ottawa Senators WCA",
+      "score": "1",
+      "logo": "images/ticker/ottawa_senators_wca.png"
+    }
+  },
+  {
+    "date": "2025-06-17 18:13",
+    "team1": {
+      "name": "WCA Vancouver Canucks",
+      "score": "0",
+      "logo": "images/ticker/wca_vancouver_canucks.png"
+    },
+    "team2": {
+      "name": "WCA Nashville Predators",
+      "score": "8",
+      "logo": "images/ticker/wca_nashville_predators.png"
+    }
+  },
+  {
+    "date": "2025-06-17 19:32",
+    "team1": {
+      "name": "WCA Minnesota Wild",
+      "score": "4",
+      "logo": "images/ticker/wca_minnesota_wild.png"
+    },
+    "team2": {
+      "name": "Ottawa Senators WCA",
+      "score": "5",
+      "logo": "images/ticker/ottawa_senators_wca.png"
+    }
+  },
+  {
+    "date": "2025-06-17 19:07",
+    "team1": {
+      "name": "WCA Minnesota Wild",
+      "score": "3",
+      "logo": "images/ticker/wca_minnesota_wild.png"
+    },
+    "team2": {
+      "name": "WCA Montreal Canadiens",
+      "score": "6",
+      "logo": "images/ticker/wca_montreal_canadiens.png"
+    }
+  },
+  {
+    "date": "2025-06-17 18:47",
+    "team1": {
+      "name": "WCA New Jersey Devils",
+      "score": "5",
+      "logo": "images/ticker/wca_new_jersey_devils.png"
+    },
+    "team2": {
+      "name": "WCA Nashville Predators",
+      "score": "3",
+      "logo": "images/ticker/wca_nashville_predators.png"
+    }
+  },
+  {
+    "date": "2025-06-17 17:55",
+    "team1": {
+      "name": "WCA New Jersey Devils",
+      "score": "2",
+      "logo": "images/ticker/wca_new_jersey_devils.png"
+    },
+    "team2": {
+      "name": "WCA Montreal Canadiens",
+      "score": "3",
+      "logo": "images/ticker/wca_montreal_canadiens.png"
+    }
+  },
+  {
+    "date": "2025-06-17 23:20",
+    "team1": {
+      "name": "WCA Carolina Hurricanes",
+      "score": "3",
+      "logo": "images/ticker/wca_carolina_hurricanes.png"
+    },
+    "team2": {
+      "name": "Ottawa Senators WCA",
+      "score": "7",
+      "logo": "images/ticker/ottawa_senators_wca.png"
+    }
+  }
+]
