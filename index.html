@@ -28,11 +28,10 @@
 #ticker-track {
   display: inline-block;
   white-space: nowrap;
-  /* No animation until .animate class is added */
 }
 
 #ticker-track.animate {
-  animation: scroll-left var(--scroll-duration, 36s) linear infinite;
+  animation: scroll-left var(--scroll-duration, 60s) linear infinite;
   will-change: transform;
 }
 
@@ -172,19 +171,41 @@ async function loadScores() {
 window.onload = loadScores;
 
 async function loadScores() {
-  try {
-    const response = await fetch('latest_scores.json');
-    const scores = await response.json();
+  const cacheKey = "cached_scores_v1";
+  const cacheTTL = 1000 * 60 * 5; // 5 minutes
+  let scores = [];
 
+  try {
+    const cached = localStorage.getItem(cacheKey);
+    const cachedTime = localStorage.getItem(cacheKey + "_time");
+    const now = Date.now();
+
+    if (cached && cachedTime && now - parseInt(cachedTime) < cacheTTL) {
+      scores = JSON.parse(cached);
+    } else {
+      const response = await fetch('latest_scores.json');
+      scores = await response.json();
+      localStorage.setItem(cacheKey, JSON.stringify(scores));
+      localStorage.setItem(cacheKey + "_time", now.toString());
+    }
+  } catch (err) {
+    console.error("Failed to load or cache scores:", err);
+  }
+
+  try {
     const track = document.getElementById('ticker-track');
-    track.innerHTML = ""; // Clear previous content
-    track.classList.remove('animate'); // Reset animation
+    track.innerHTML = "";
+    track.classList.remove('animate');
 
     const segment = document.createElement('div');
     segment.style.display = "inline";
 
-    // Build one segment of games
+    const imageUrls = [];
+
     scores.forEach((game, index) => {
+      imageUrls.push(game.team1.logo);
+      imageUrls.push(game.team2.logo);
+
       const wrap = document.createElement('span');
       wrap.style.display = "inline-flex";
       wrap.style.alignItems = "center";
@@ -207,27 +228,42 @@ async function loadScores() {
       }
     });
 
-    // Append segment
-    track.appendChild(segment.cloneNode(true));
-
-    // Add 3 spacers
+    // Add a 3-game-width spacer
     for (let i = 0; i < 3; i++) {
       const spacer = document.createElement('span');
       spacer.style.display = "inline-block";
       spacer.style.width = "150px";
       spacer.innerHTML = "&nbsp;";
-      track.appendChild(spacer);
+      segment.appendChild(spacer);
     }
 
-    // Duplicate segment again
+    // Append twice
+    track.appendChild(segment.cloneNode(true));
     track.appendChild(segment.cloneNode(true));
 
-    // Force reflow then start animation
-    void track.offsetWidth;
-    track.classList.add('animate');
+    // Preload all images before animating
+    const preloadImages = (srcs) => {
+      return Promise.all(srcs.map(src => {
+        return new Promise(res => {
+          const img = new Image();
+          img.onload = res;
+          img.onerror = res;
+          img.src = src;
+        });
+      }));
+    };
+
+    await preloadImages(imageUrls);
+
+    // Safari-specific: use requestAnimationFrame to trigger repaint
+    requestAnimationFrame(() => {
+      void track.offsetWidth; // force reflow
+      track.classList.add("animate");
+    });
+
   } catch (err) {
-    console.error(err);
-    document.getElementById('score-ticker').textContent = "Failed to load scores.";
+    console.error("Failed to build ticker:", err);
+    document.getElementById('score-ticker').textContent = "Error loading scores.";
   }
 }
 
