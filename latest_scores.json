@@ -1,0 +1,106 @@
+[
+  {
+    "date": "2025-06-17 17:52",
+    "team1": {
+      "name": "WCA Carolina Hurricanes",
+      "score": "0",
+      "logo": "images/wca_carolina_hurricanes.png"
+    },
+    "team2": {
+      "name": "60443",
+      "score": "3",
+      "logo": "images/60443.png"
+    }
+  },
+  {
+    "date": "2025-06-17 18:53",
+    "team1": {
+      "name": "WCA Vancouver Canucks",
+      "score": "0",
+      "logo": "images/wca_vancouver_canucks.png"
+    },
+    "team2": {
+      "name": "218941",
+      "score": "1",
+      "logo": "images/218941.png"
+    }
+  },
+  {
+    "date": "2025-06-17 18:13",
+    "team1": {
+      "name": "WCA Vancouver Canucks",
+      "score": "0",
+      "logo": "images/wca_vancouver_canucks.png"
+    },
+    "team2": {
+      "name": "206910",
+      "score": "8",
+      "logo": "images/206910.png"
+    }
+  },
+  {
+    "date": "2025-06-17 19:32",
+    "team1": {
+      "name": "WCA Minnesota Wild",
+      "score": "0",
+      "logo": "images/wca_minnesota_wild.png"
+    },
+    "team2": {
+      "name": "218941",
+      "score": "5",
+      "logo": "images/218941.png"
+    }
+  },
+  {
+    "date": "2025-06-17 19:07",
+    "team1": {
+      "name": "WCA Minnesota Wild",
+      "score": "0",
+      "logo": "images/wca_minnesota_wild.png"
+    },
+    "team2": {
+      "name": "219183",
+      "score": "6",
+      "logo": "images/219183.png"
+    }
+  },
+  {
+    "date": "2025-06-17 18:47",
+    "team1": {
+      "name": "WCA New Jersey Devils",
+      "score": "0",
+      "logo": "images/wca_new_jersey_devils.png"
+    },
+    "team2": {
+      "name": "206910",
+      "score": "3",
+      "logo": "images/206910.png"
+    }
+  },
+  {
+    "date": "2025-06-17 17:55",
+    "team1": {
+      "name": "WCA New Jersey Devils",
+      "score": "0",
+      "logo": "images/wca_new_jersey_devils.png"
+    },
+    "team2": {
+      "name": "219183",
+      "score": "3",
+      "logo": "images/219183.png"
+    }
+  },
+  {
+    "date": "2025-06-17 23:20",
+    "team1": {
+      "name": "WCA Carolina Hurricanes",
+      "score": "0",
+      "logo": "images/wca_carolina_hurricanes.png"
+    },
+    "team2": {
+      "name": "218941",
+      "score": "7",
+      "logo": "images/218941.png"
+    }
+  }
+]
