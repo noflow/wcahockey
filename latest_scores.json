@@ -4,12 +4,12 @@
     "team1": {
       "name": "WCA Carolina Hurricanes",
       "score": "0",
-      "logo": "images/wca_carolina_hurricanes.png"
+      "logo": "images/ticker/wca_carolina_hurricanes.png"
     },
     "team2": {
       "name": "WCA Vancouver Canucks",
       "score": "3",
-      "logo": "images/wca_vancouver_canucks.png"
+      "logo": "images/ticker/wca_vancouver_canucks.png"
     }
   },
   {
@@ -17,12 +17,12 @@
     "team1": {
       "name": "WCA Vancouver Canucks",
       "score": "0",
-      "logo": "images/wca_vancouver_canucks.png"
+      "logo": "images/ticker/wca_vancouver_canucks.png"
     },
     "team2": {
       "name": "Ottawa Senators WCA",
       "score": "1",
-      "logo": "images/ottawa_senators_wca.png"
+      "logo": "images/ticker/ottawa_senators_wca.png"
     }
   },
   {
@@ -30,12 +30,12 @@
     "team1": {
       "name": "WCA Vancouver Canucks",
       "score": "0",
-      "logo": "images/wca_vancouver_canucks.png"
+      "logo": "images/ticker/wca_vancouver_canucks.png"
     },
     "team2": {
       "name": "WCA Nashville Predators",
       "score": "8",
-      "logo": "images/wca_nashville_predators.png"
+      "logo": "images/ticker/wca_nashville_predators.png"
     }
   },
   {
@@ -43,12 +43,12 @@
     "team1": {
       "name": "WCA Minnesota Wild",
       "score": "0",
-      "logo": "images/wca_minnesota_wild.png"
+      "logo": "images/ticker/wca_minnesota_wild.png"
     },
     "team2": {
       "name": "Ottawa Senators WCA",
       "score": "5",
-      "logo": "images/ottawa_senators_wca.png"
+      "logo": "images/ticker/ottawa_senators_wca.png"
     }
   },
   {
@@ -56,12 +56,12 @@
     "team1": {
       "name": "WCA Minnesota Wild",
       "score": "0",
-      "logo": "images/wca_minnesota_wild.png"
+      "logo": "images/ticker/wca_minnesota_wild.png"
     },
     "team2": {
       "name": "WCA Montreal Canadiens",
       "score": "6",
-      "logo": "images/wca_montreal_canadiens.png"
+      "logo": "images/ticker/wca_montreal_canadiens.png"
     }
   },
   {
@@ -69,12 +69,12 @@
     "team1": {
       "name": "WCA New Jersey Devils",
       "score": "0",
-      "logo": "images/wca_new_jersey_devils.png"
+      "logo": "images/ticker/wca_new_jersey_devils.png"
     },
     "team2": {
       "name": "WCA Nashville Predators",
       "score": "3",
-      "logo": "images/wca_nashville_predators.png"
+      "logo": "images/ticker/wca_nashville_predators.png"
     }
   },
   {
@@ -82,12 +82,12 @@
     "team1": {
       "name": "WCA New Jersey Devils",
       "score": "0",
-      "logo": "images/wca_new_jersey_devils.png"
+      "logo": "images/ticker/wca_new_jersey_devils.png"
     },
     "team2": {
       "name": "WCA Montreal Canadiens",
       "score": "3",
-      "logo": "images/wca_montreal_canadiens.png"
+      "logo": "images/ticker/wca_montreal_canadiens.png"
     }
   },
   {
@@ -95,12 +95,12 @@
     "team1": {
       "name": "WCA Carolina Hurricanes",
       "score": "0",
-      "logo": "images/wca_carolina_hurricanes.png"
+      "logo": "images/ticker/wca_carolina_hurricanes.png"
     },
     "team2": {
       "name": "Ottawa Senators WCA",
       "score": "7",
-      "logo": "images/ottawa_senators_wca.png"
+      "logo": "images/ticker/ottawa_senators_wca.png"
     }
   }
 ]
