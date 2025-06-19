@@ -21,6 +21,33 @@
       position: relative;
       font-size: 1rem;
       font-weight: bold;
+      white-space: nowrap;
+    }
+
+    #ticker-track {
+      display: inline-block;
+      white-space: nowrap;
+      animation: scroll-left 36s linear infinite;
+      will-change: transform;
+    }
+
+    @keyframes scroll-left {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    #ticker-content, #ticker-content-duplicate {
+      display: inline;
+    }
+
+    
+      background-color: #222;
+      color: white;
+      padding: 10px 0;
+      overflow: hidden;
+      position: relative;
+      font-size: 1rem;
+      font-weight: bold;
     }
 
     #ticker-content {
@@ -80,9 +107,14 @@
 </head>
 <body>
 
+
 <div id="score-ticker">
-  <div id="ticker-content">Loading latest scores...</div>
+  <div id="ticker-track">
+    <div id="ticker-content"></div>
+    <div id="ticker-content-duplicate"></div>
+  </div>
 </div>
+
 
 <header>
   <div style="display:flex;align-items:center;">
@@ -145,7 +177,49 @@ async function loadScores() {
 
 
 
+
 window.onload = loadScores;
+
+async function loadScores() {
+  try {
+    const response = await fetch('latest_scores.json');
+    const scores = await response.json();
+
+    const content = document.getElementById('ticker-content');
+    const contentDup = document.getElementById('ticker-content-duplicate');
+    content.innerHTML = "";
+    contentDup.innerHTML = "";
+
+    scores.forEach((game, index) => {
+      const wrapper = document.createElement('span');
+      wrapper.style.display = "inline-flex";
+      wrapper.style.alignItems = "center";
+      wrapper.style.marginRight = "2rem";
+
+      wrapper.innerHTML = `
+        <img src="${game.team1.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
+        <span style="margin-right:12px;font-weight:bold;">${game.team1.score}</span>
+        <img src="${game.team2.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
+        <span style="font-weight:bold;">${game.team2.score}</span>
+      `;
+
+      content.appendChild(wrapper);
+      contentDup.appendChild(wrapper.cloneNode(true));
+
+      if (index < scores.length - 1) {
+        const sep = document.createElement('span');
+        sep.textContent = " • ";
+        sep.style.margin = "0 1.5rem";
+        content.appendChild(sep);
+        contentDup.appendChild(sep.cloneNode(true));
+      }
+    });
+  } catch (error) {
+    console.error("Failed to load scores:", error);
+    document.getElementById('ticker-content').innerText = "Failed to load scores.";
+  }
+}
+
 
 async function loadScores() {
   try {
