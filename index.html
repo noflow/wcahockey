@@ -253,12 +253,15 @@ async function loadScores() {
       }));
     };
 
-    await preloadImages(imageUrls);
+    preloadImages(imageUrls); // fire & forget
 
     // Safari-specific: use requestAnimationFrame to trigger repaint
     requestAnimationFrame(() => {
       void track.offsetWidth; // force reflow
-      track.classList.add("animate");
+      track.appendChild(segment.cloneNode(true));
+      track.appendChild(segment.cloneNode(true));
+      track.classList.add("animate");  // Start animating earlier
+      preloadImages(imageUrls);        // Continue loading in background
     });
 
   } catch (err) {
