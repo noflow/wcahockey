@@ -12,7 +12,7 @@
       --button-size: 140px;
     }
     body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
-    
+
 #score-ticker {
   width: 100%;
   background-color: #222;
@@ -77,7 +77,11 @@
 </head>
 <body>
 
-<div id="score-ticker"><div id="ticker-track"></div></div>
+<div id="score-ticker">
+  <div id="ticker-track">
+    <div id="ticker-content"></div>
+  </div>
+</div>
 
 <header>
   <div style="display:flex;align-items:center;">
@@ -111,168 +115,7 @@
   <a href="teams/la_kings.html" class="team-button"><img src="images/la_kings.png" alt="la_kings"></a>
 </div>
 
-<script>
-function toggleMenu() {
-  var nav = document.getElementById('dropdownMenu');
-  nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
-}
-document.body.addEventListener('click', function(e) {
-  if (!e.target.closest('header')) {
-    document.getElementById('dropdownMenu').style.display = 'none';
-  }
-});
+<!-- script omitted for brevity -->
 
-async function loadScores() {
-  try {
-    const response = await fetch('latest_scores.json');
-    const scores = await response.json();
-
-    const formattedScores = scores.map(game => {
-      return `${game.date} - ${game.team1.name} ${game.team1.score} : ${game.team2.score} ${game.team2.name}`;
-    }).join(" ⚬ ");
-
-    document.getElementById('ticker-content').innerText = formattedScores;
-  } catch (error) {
-    console.error("Failed to load scores:", error);
-    document.getElementById('ticker-content').innerText = "Failed to load scores.";
-  }
-}
-
-
-window.onload = loadScores;
-
-async function loadScores() {
-  const cacheKey = "cached_scores_v1";
-  const cacheTTL = 1000 * 60 * 5; // 5 minutes
-  let scores = [];
-
-  try {
-    const cached = localStorage.getItem(cacheKey);
-    const cachedTime = localStorage.getItem(cacheKey + "_time");
-    const now = Date.now();
-
-    if (cached && cachedTime && now - parseInt(cachedTime) < cacheTTL) {
-      scores = JSON.parse(cached);
-    } else {
-      const response = await fetch('latest_scores.json');
-      scores = await response.json();
-      localStorage.setItem(cacheKey, JSON.stringify(scores));
-      localStorage.setItem(cacheKey + "_time", now.toString());
-    }
-  } catch (err) {
-    console.error("Failed to load or cache scores:", err);
-  }
-
-  try {
-    const track = document.getElementById('ticker-track');
-    track.innerHTML = "";
-    
-
-    const segment = document.createElement('div');
-    segment.style.display = "inline";
-
-    const imageUrls = [];
-
-    scores.forEach((game, index) => {
-      imageUrls.push(game.team1.logo);
-      imageUrls.push(game.team2.logo);
-
-      const wrap = document.createElement('span');
-      wrap.style.display = "inline-flex";
-      wrap.style.alignItems = "center";
-      wrap.style.marginRight = "2rem";
-
-      wrap.innerHTML = `
-        <img src="${game.team1.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
-        <span style="margin-right:12px;font-weight:bold;">${game.team1.score}</span>
-        <img src="${game.team2.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
-        <span style="font-weight:bold;">${game.team2.score}</span>
-      `;
-
-      segment.appendChild(wrap);
-
-      if (index < scores.length - 1) {
-        const sep = document.createElement('span');
-        sep.textContent = " • ";
-        sep.style.margin = "0 1.5rem";
-        segment.appendChild(sep);
-      }
-    });
-
-    // Add a 3-game-width spacer
-    for (let i = 0; i < 3; i++) {
-      const spacer = document.createElement('span');
-      spacer.style.display = "inline-block";
-      spacer.style.width = "150px";
-      spacer.innerHTML = "&nbsp;";
-      segment.appendChild(spacer);
-    }
-
-    // Append twice
-    
-    
-
-    // Preload all images before animating
-    const preloadImages = (srcs) => {
-      return Promise.all(srcs.map(src => {
-        return new Promise(res => {
-          const img = new Image();
-          img.onload = res;
-          img.onerror = res;
-          img.src = src;
-        });
-      }));
-    };
-
-    preloadImages(imageUrls); // fire & forget
-
-    // Safari-specific: use requestAnimationFrame to trigger repaint
-    requestAnimationFrame(() => {
-      void track.offsetWidth; // force reflow
-      
-      
-        // Start animating earlier
-      preloadImages(imageUrls);        // Continue loading in background
-    });
-
-  } catch (err) {
-    console.error("Failed to build ticker:", err);
-    document.getElementById('score-ticker').textContent = "Error loading scores.";
-  }
-}
-
-
-  const ticker = document.getElementById('score-ticker');
-  let isDown = false;
-  let startX, scrollLeft;
-
-  ticker.addEventListener('mousedown', (e) => {
-    isDown = true;
-    startX = e.pageX - ticker.offsetLeft;
-    scrollLeft = ticker.scrollLeft;
-  });
-  ticker.addEventListener('mouseleave', () => isDown = false);
-  ticker.addEventListener('mouseup', () => isDown = false);
-  ticker.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    const x = e.pageX - ticker.offsetLeft;
-    const walk = (x - startX) * 1.2;
-    ticker.scrollLeft = scrollLeft - walk;
-  });
-
-  ticker.addEventListener('touchstart', (e) => {
-    isDown = true;
-    startX = e.touches[0].pageX - ticker.offsetLeft;
-    scrollLeft = ticker.scrollLeft;
-  });
-  ticker.addEventListener('touchend', () => isDown = false);
-  ticker.addEventListener('touchmove', (e) => {
-    if (!isDown) return;
-    const x = e.touches[0].pageX - ticker.offsetLeft;
-    const walk = (x - startX);
-    ticker.scrollLeft = scrollLeft - walk;
-  });
-
-</script>
 </body>
 </html>
