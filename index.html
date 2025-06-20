@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,7 +80,7 @@
 
 <div id="score-ticker">
   <div id="ticker-track">
-    <div id="ticker-content"></div>
+    <div id="ticker-content">Loading latest scores...</div>
   </div>
 </div>
 
@@ -115,7 +116,106 @@
   <a href="teams/la_kings.html" class="team-button"><img src="images/la_kings.png" alt="la_kings"></a>
 </div>
 
-<!-- script omitted for brevity -->
+<script>
+function toggleMenu() {
+  var nav = document.getElementById('dropdownMenu');
+  nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
+}
+document.body.addEventListener('click', function(e) {
+  if (!e.target.closest('header')) {
+    document.getElementById('dropdownMenu').style.display = 'none';
+  }
+});
 
+window.onload = loadScores;
+
+async function loadScores() {
+  const cacheKey = "cached_scores_v1";
+  const cacheTTL = 1000 * 60 * 5; // 5 minutes
+  let scores = [];
+
+  try {
+    const cached = localStorage.getItem(cacheKey);
+    const cachedTime = localStorage.getItem(cacheKey + "_time");
+    const now = Date.now();
+
+    if (cached && cachedTime && now - parseInt(cachedTime) < cacheTTL) {
+      scores = JSON.parse(cached);
+    } else {
+      const response = await fetch('latest_scores.json');
+      scores = await response.json();
+      localStorage.setItem(cacheKey, JSON.stringify(scores));
+      localStorage.setItem(cacheKey + "_time", now.toString());
+    }
+  } catch (err) {
+    console.error("Failed to load or cache scores:", err);
+    alert("Failed to load latest_scores.json: " + err.message);
+  }
+
+  try {
+    const content = document.getElementById('ticker-content');
+    content.innerHTML = "";
+
+    const segment = document.createElement('div');
+    segment.style.display = "inline";
+
+    const imageUrls = [];
+
+    scores.forEach((game, index) => {
+      imageUrls.push(game.team1.logo);
+      imageUrls.push(game.team2.logo);
+
+      const wrap = document.createElement('span');
+      wrap.style.display = "inline-flex";
+      wrap.style.alignItems = "center";
+      wrap.style.marginRight = "2rem";
+
+      wrap.innerHTML = `
+        <img src="${game.team1.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
+        <span style="margin-right:12px;font-weight:bold;">${game.team1.score}</span>
+        <img src="${game.team2.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
+        <span style="font-weight:bold;">${game.team2.score}</span>
+      `;
+
+      segment.appendChild(wrap);
+
+      if (index < scores.length - 1) {
+        const sep = document.createElement('span');
+        sep.textContent = " • ";
+        sep.style.margin = "0 1.5rem";
+        segment.appendChild(sep);
+      }
+    });
+
+    for (let i = 0; i < 3; i++) {
+      const spacer = document.createElement('span');
+      spacer.style.display = "inline-block";
+      spacer.style.width = "150px";
+      spacer.innerHTML = "&nbsp;";
+      segment.appendChild(spacer);
+    }
+
+    content.appendChild(segment);
+
+    const preloadImages = (srcs) => {
+      return Promise.all(srcs.map(src => {
+        return new Promise(res => {
+          const img = new Image();
+          img.onload = res;
+          img.onerror = res;
+          img.src = src;
+        });
+      }));
+    };
+
+    preloadImages(imageUrls);
+    requestAnimationFrame(() => void content.offsetWidth);
+  } catch (err) {
+    console.error("Failed to build ticker:", err);
+    alert("Error building ticker: " + err.message);
+    document.getElementById('score-ticker').textContent = "Error loading scores.";
+  }
+}
+</script>
 </body>
 </html>
