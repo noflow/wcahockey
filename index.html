@@ -14,13 +14,6 @@
     body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
     
 #score-ticker {
-  user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  overflow-x: auto;
-  overflow-y: hidden;
-  cursor: grab;
-  -webkit-overflow-scrolling: touch;
   width: 100%;
   background-color: #222;
   color: white;
@@ -52,7 +45,11 @@
       font-weight: bold;
     }
 
-    
+    #ticker-content {
+      display: inline-block;
+      white-space: nowrap;
+      
+    }
 
     
       to {
@@ -137,84 +134,6 @@
 </div>
 
 <script>
-window.onload = async function() {
-  try {
-    const response = await fetch('latest_scores.json');
-    const scores = await response.json();
-
-    const track = document.getElementById('ticker-track');
-    track.innerHTML = "";
-
-    scores.forEach((game, index) => {
-      const wrap = document.createElement('span');
-      wrap.style.display = "inline-flex";
-      wrap.style.alignItems = "center";
-      wrap.style.marginRight = "2rem";
-
-      wrap.innerHTML = `
-        <img src="${game.team1.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
-        <span style="margin-right:12px;font-weight:bold;">${game.team1.score}</span>
-        <img src="${game.team2.logo}" alt="" style="height:20px;width:auto;margin-right:4px;">
-        <span style="font-weight:bold;">${game.team2.score}</span>
-      `;
-
-      track.appendChild(wrap);
-
-      if (index < scores.length - 1) {
-        const sep = document.createElement('span');
-        sep.textContent = " • ";
-        sep.style.margin = "0 1.5rem";
-        track.appendChild(sep);
-      }
-    });
-  } catch (err) {
-    console.error("Failed to load scores:", err);
-    document.getElementById('score-ticker').textContent = "Error loading scores.";
-  }
-
-  // Manual drag scroll behavior
-  const scroller = document.getElementById('score-ticker');
-  let isDown = false;
-  let startX, scrollLeft;
-
-  scroller.addEventListener('mousedown', (e) => {
-    isDown = true;
-    scroller.classList.add('dragging');
-    startX = e.pageX - scroller.offsetLeft;
-    scrollLeft = scroller.scrollLeft;
-  });
-  scroller.addEventListener('mouseleave', () => {
-    isDown = false;
-    scroller.classList.remove('dragging');
-  });
-  scroller.addEventListener('mouseup', () => {
-    isDown = false;
-    scroller.classList.remove('dragging');
-  });
-  scroller.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - scroller.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    scroller.scrollLeft = scrollLeft - walk;
-  });
-
-  // Touch support
-  let touchStartX = 0;
-  let touchScrollLeft = 0;
-
-  scroller.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].pageX;
-    touchScrollLeft = scroller.scrollLeft;
-  });
-
-  scroller.addEventListener('touchmove', (e) => {
-    const x = e.touches[0].pageX;
-    const walk = (x - touchStartX);
-    scroller.scrollLeft = touchScrollLeft - walk;
-  });
-};
-
 function toggleMenu() {
   var nav = document.getElementById('dropdownMenu');
   nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
@@ -236,7 +155,7 @@ document.body.addEventListener('click', function(e) {
 }
 
 
-
+window.onload = loadScores;
 
 else {
       const response = await fetch('latest_scores.json');
@@ -251,7 +170,7 @@ else {
   try {
     const track = document.getElementById('ticker-track');
     track.innerHTML = "";
-    track.classList.remove('animate');
+    
 
     const segment = document.createElement('div');
     segment.style.display = "inline";
@@ -294,8 +213,8 @@ else {
     }
 
     // Append twice
-    track.appendChild(segment.cloneNode(true));
-    track.appendChild(segment.cloneNode(true));
+    
+    
 
     // Preload all images before animating
     const preloadImages = (srcs) => {
@@ -314,9 +233,9 @@ else {
     // Safari-specific: use requestAnimationFrame to trigger repaint
     requestAnimationFrame(() => {
       void track.offsetWidth; // force reflow
-      track.appendChild(segment.cloneNode(true));
-      track.appendChild(segment.cloneNode(true));
-      setTimeout(() => { track.classList.add("animate"); }, 15000);  // Start animating earlier
+      
+      
+        // Start animating earlier
       preloadImages(imageUrls);        // Continue loading in background
     });
 
@@ -325,6 +244,42 @@ else {
     document.getElementById('score-ticker').textContent = "Error loading scores.";
   }
 }
+
+
+  // Manual click-and-drag scroll for ticker
+  const ticker = document.getElementById('score-ticker');
+  let isDown = false;
+  let startX, scrollLeft;
+
+  ticker.addEventListener('mousedown', (e) => {
+    isDown = true;
+    ticker.classList.add('active');
+    startX = e.pageX - ticker.offsetLeft;
+    scrollLeft = ticker.scrollLeft;
+  });
+  ticker.addEventListener('mouseleave', () => isDown = false);
+  ticker.addEventListener('mouseup', () => isDown = false);
+  ticker.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - ticker.offsetLeft;
+    const walk = (x - startX) * 1.2; //scroll speed
+    ticker.scrollLeft = scrollLeft - walk;
+  });
+
+  // Touch support
+  ticker.addEventListener('touchstart', (e) => {
+    isDown = true;
+    startX = e.touches[0].pageX - ticker.offsetLeft;
+    scrollLeft = ticker.scrollLeft;
+  });
+  ticker.addEventListener('touchend', () => isDown = false);
+  ticker.addEventListener('touchmove', (e) => {
+    if (!isDown) return;
+    const x = e.touches[0].pageX - ticker.offsetLeft;
+    const walk = (x - startX) * 1.2;
+    ticker.scrollLeft = scrollLeft - walk;
+  });
 
 </script>
 </body>
