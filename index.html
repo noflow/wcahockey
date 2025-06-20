@@ -217,5 +217,40 @@ async function loadScores() {
   }
 }
 </script>
+
+<script>
+  const ticker = document.getElementById('score-ticker');
+  let isDown = false;
+  let startX, scrollLeft;
+
+  ticker.addEventListener('mousedown', (e) => {
+    isDown = true;
+    startX = e.pageX - ticker.offsetLeft;
+    scrollLeft = ticker.scrollLeft;
+  });
+
+  ticker.addEventListener('mouseleave', () => isDown = false);
+  ticker.addEventListener('mouseup', () => isDown = false);
+  ticker.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    const x = e.pageX - ticker.offsetLeft;
+    const walk = (x - startX) * 1.2;
+    ticker.scrollLeft = scrollLeft - walk;
+  });
+
+  ticker.addEventListener('touchstart', (e) => {
+    isDown = true;
+    startX = e.touches[0].pageX - ticker.offsetLeft;
+    scrollLeft = ticker.scrollLeft;
+  });
+
+  ticker.addEventListener('touchend', () => isDown = false);
+  ticker.addEventListener('touchmove', (e) => {
+    if (!isDown) return;
+    const x = e.touches[0].pageX - ticker.offsetLeft;
+    const walk = (x - startX);
+    ticker.scrollLeft = scrollLeft - walk;
+  });
+</script>
 </body>
 </html>
