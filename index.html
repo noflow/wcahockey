@@ -30,32 +30,10 @@
   white-space: nowrap;
 }
 
-
-
-
-  100% { transform: translateX(-50%); }
+#ticker-content {
+  display: inline-block;
+  white-space: nowrap;
 }
-
-      background-color: #222;
-      color: white;
-      padding: 10px 0;
-      overflow: hidden;
-      position: relative;
-      font-size: 1rem;
-      font-weight: bold;
-    }
-
-    #ticker-content {
-      display: inline-block;
-      white-space: nowrap;
-      
-    }
-
-    
-      to {
-        transform: translateX(-100%);
-      }
-    }
 
     header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 4px solid #333;}
     .title { font-size: 4rem; font-weight: bold; letter-spacing: 0.1em;}
@@ -144,7 +122,13 @@ document.body.addEventListener('click', function(e) {
   }
 });
 
-- ${game.team1.name} ${game.team1.score} : ${game.team2.score} ${game.team2.name}`;
+async function loadScores() {
+  try {
+    const response = await fetch('latest_scores.json');
+    const scores = await response.json();
+
+    const formattedScores = scores.map(game => {
+      return `${game.date} - ${game.team1.name} ${game.team1.score} : ${game.team2.score} ${game.team2.name}`;
     }).join(" ⚬ ");
 
     document.getElementById('ticker-content').innerText = formattedScores;
@@ -157,7 +141,19 @@ document.body.addEventListener('click', function(e) {
 
 window.onload = loadScores;
 
-else {
+async function loadScores() {
+  const cacheKey = "cached_scores_v1";
+  const cacheTTL = 1000 * 60 * 5; // 5 minutes
+  let scores = [];
+
+  try {
+    const cached = localStorage.getItem(cacheKey);
+    const cachedTime = localStorage.getItem(cacheKey + "_time");
+    const now = Date.now();
+
+    if (cached && cachedTime && now - parseInt(cachedTime) < cacheTTL) {
+      scores = JSON.parse(cached);
+    } else {
       const response = await fetch('latest_scores.json');
       scores = await response.json();
       localStorage.setItem(cacheKey, JSON.stringify(scores));
@@ -246,14 +242,12 @@ else {
 }
 
 
-  // Manual click-and-drag scroll for ticker
   const ticker = document.getElementById('score-ticker');
   let isDown = false;
   let startX, scrollLeft;
 
   ticker.addEventListener('mousedown', (e) => {
     isDown = true;
-    ticker.classList.add('active');
     startX = e.pageX - ticker.offsetLeft;
     scrollLeft = ticker.scrollLeft;
   });
@@ -261,13 +255,11 @@ else {
   ticker.addEventListener('mouseup', () => isDown = false);
   ticker.addEventListener('mousemove', (e) => {
     if (!isDown) return;
-    e.preventDefault();
     const x = e.pageX - ticker.offsetLeft;
-    const walk = (x - startX) * 1.2; //scroll speed
+    const walk = (x - startX) * 1.2;
     ticker.scrollLeft = scrollLeft - walk;
   });
 
-  // Touch support
   ticker.addEventListener('touchstart', (e) => {
     isDown = true;
     startX = e.touches[0].pageX - ticker.offsetLeft;
@@ -277,7 +269,7 @@ else {
   ticker.addEventListener('touchmove', (e) => {
     if (!isDown) return;
     const x = e.touches[0].pageX - ticker.offsetLeft;
-    const walk = (x - startX) * 1.2;
+    const walk = (x - startX);
     ticker.scrollLeft = scrollLeft - walk;
   });
 
