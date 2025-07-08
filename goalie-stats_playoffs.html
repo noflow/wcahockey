@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <title>
+   Goalie Stats
+  </title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <style>
+   body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 4px solid #333; }
+    .title { font-size: 2rem; font-weight: bold; letter-spacing: 0.05em; display: flex; align-items: center; }
+    .title img { height: 50px; margin-right: 1rem; }
+    .menu-icon { cursor: pointer; width: 30px; }
+    .menu-icon div { height: 4px; background: #333; margin: 5px 0; border-radius: 2px; }
+    nav { display: none; position: absolute; right: 2rem; top: 5rem; background: #fff; border: 1px solid #ccc; box-shadow: 2px 2px 8px #bbb; border-radius: 8px; z-index: 999; }
+    nav a { display: block; padding: 1rem 2rem; text-decoration: none; color: #222; }
+    nav a:hover { background: #eee; }
+
+    .container { padding: 2rem; max-width: 1200px; margin: auto; }
+    .box { max-height: 800px; overflow-y: auto; border: 1px solid #ccc; background: #fff; box-shadow: 0 0 12px rgba(0,0,0,.1); }
+    table { border-collapse: separate; border-spacing: 0; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+    th { background: #333; color: #fff; position: sticky; top: 0; z-index: 3; cursor: pointer; }
+    tr:nth-child(even) { background: #f9f9f9; }
+
+    .loading { text-align: center; margin-top: 2rem; font-size: 1.2rem; }
+    .back-button {
+      position: fixed; bottom: 20px; right: 20px;
+      padding: 1rem 2rem; font-size: 1rem;
+      background-color: #333; color: white;
+      border: none; border-radius: 8px;
+      cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+  </style>
+  <style>
+   @keyframes move{0%{background-position:0%}100%{background-position:100%}}
+  </style>
+ </head>
+ <body>
+  <script>
+   document.addEventListener("DOMContentLoaded",function(){
+  const bar=document.createElement("div");
+  bar.id="progress-bar";
+  bar.style.cssText="position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,red,orange,yellow,green,blue,indigo,violet);background-size:400% 400%;animation:move 2s linear infinite;width:0;z-index:9999";
+  document.body.appendChild(bar);
+  let w=0,interval=setInterval(()=>{if(w>=100){clearInterval(interval);bar.remove();}else{w+=1;bar.style.width=w+'%'}},15);
+});
+  </script>
+  <header>
+   <div class="title">
+    <img src="images/new_logo.png">
+    <span>
+     WCA Hockey League
+    </span>
+   </div>
+   <div class="menu-icon" onclick="toggleMenu()">
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+   </div>
+   <nav id="dropdownMenu">
+    <a href="index.html">
+     Home
+    </a>
+    <a href="league-stats.html">
+     League Stats
+    </a>
+    <a href="owner-application.html">
+     Owner Application
+    </a>
+    <a href="player-signup.html">
+     Player Sign Up
+    </a>
+   </nav>
+  </header>
+  <div class="container">
+   <h2>
+    Goalie Master
+   </h2>
+   <div class="search-wrapper" style="text-align:right;margin:1rem 0;">
+  <input type="text" id="searchInput" placeholder="Search player..." style="padding:6px 12px;border:1px solid #ccc;border-radius:4px;width:220px;">
+</div>
+
+   <div class="loading">
+    <div class="progress-container">
+     <div class="progress-bar">
+     </div>
+    </div>
+    <style>
+     .progress-container {
+  width: 100%;
+  height: 6px;
+  background: #eee;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(to right, #00c6ff, #0072ff);
+  animation: loading 2s infinite;
+}
+@keyframes loading {
+  0% { width: 0; }
+  50% { width: 100%; }
+  100% { width: 0; }
+}
+    </style>
+   </div>
+   <div class="box" id="table-box" style="display:none;">
+   </div>
+  </div>
+  <button class="back-button" onclick="location.href='league-stats.html'">
+   Back to League Stats
+  </button>
+  <script>
+   function toggleMenu() {
+  var nav = document.getElementById('dropdownMenu');
+  nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
+}
+
+document.body.addEventListener('click', function(e) {
+  if (!e.target.closest('header')) {
+    document.getElementById('dropdownMenu').style.display = 'none';
+  }
+});
+
+fetch('https://script.google.com/macros/s/AKfycbw63rl_7Lmhrf_m2dLp6KVCY7hqKN912_-Bpc6_1ClHFmayoASTQw0Ng4_S4vnxvQ5MNQ/exec?playoffs=1&tab=Goalie%20Master&json=1')
+  .then(r => r.json())
+  .then(data => {
+    const box = document.getElementById('table-box');
+    if (!data.headers || !data.rows) throw new Error("Missing data");
+    const headers = data.headers;
+    const rows = data.rows;
+
+    const thead = '<thead><tr>' + headers.map((h, i) =>
+      `<th onclick="sortTable(${i})">${h}</th>`).join('') + '</tr></thead>';
+
+    const tbody = '<tbody>' + rows.map(r =>
+      '<tr>' + r.map((c, j) =>
+        j === 0 ? `<td><a href="playercard.html?tab=Goalie Master&player=${encodeURIComponent(c)}">${c}</a></td>` : `<td>${c}</td>`
+      ).join('') + '</tr>'
+    ).join('') + '</tbody>';
+
+    box.innerHTML = '<table id="stats">' + thead + tbody + '</table>';
+    document.querySelector('.loading').style.display = 'none';
+    box.style.display = 'block';
+  })
+  .catch(() => {
+    document.querySelector('.loading').textContent = 'Failed to load stats.';
+  });
+
+let dir = true;
+function sortTable(col) {
+  const tbody = [...document.querySelectorAll("#stats tbody tr")];
+  tbody.sort((a, b) => {
+    const A = a.children[col].textContent.trim();
+    const B = b.children[col].textContent.trim();
+    const nA = parseFloat(A), nB = parseFloat(B);
+    const isNum = !isNaN(nA) && !isNaN(nB);
+    return dir ? (isNum ? nA - nB : A.localeCompare(B)) : (isNum ? nB - nA : B.localeCompare(A));
+  });
+  dir = !dir;
+  const parent = document.querySelector("#stats tbody");
+  tbody.forEach(tr => parent.appendChild(tr));
+}
+  
+// ---- Live search filter ----
+document.getElementById('searchInput').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#stats tbody tr');
+    rows.forEach(tr => {
+        const name = tr.children[0].textContent.toLowerCase();
+        tr.style.display = name.includes(q) ? '' : 'none';
+    });
+});
+</script>
+ </body>
+</html>

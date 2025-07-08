@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WCA Hockey League - Playoff Bracket</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 4px solid #333; }
+    .title { font-size: 4rem; font-weight: bold; letter-spacing: 0.1em; }
+    .menu-icon { cursor: pointer; width: 40px; }
+    .menu-icon div { height: 5px; background: #333; margin: 7px 0; border-radius: 2px; }
+    nav { display: none; position: absolute; right: 2rem; top: 5rem; background: #fff; border: 1px solid #ccc; box-shadow: 2px 2px 8px #bbb; border-radius: 8px; z-index: 10; }
+    nav a { display: block; padding: 1rem 2rem; text-decoration: none; color: #222; }
+    nav a:hover { background: #eee; }
+
+    .back-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .back-button:hover {
+      background-color: #555;
+    }
+
+    .bracket { display: flex; gap: 2rem; justify-content: center; margin-top: 2rem; font-family: Arial; flex-wrap: wrap; }
+    .round { display: flex; flex-direction: column; gap: 2rem; }
+    .matchup { display: flex; flex-direction: column; align-items: flex-start; border: 1px solid #ccc; padding: 0.5rem; background: #fff; width: 200px; border-radius: 8px; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
+    .team { display: flex; align-items: center; gap: 0.5rem; }
+    .team img { width: 32px; height: 32px; }
+    .winner { font-weight: bold; color: green; }
+
+    @media (max-width: 700px) {
+      header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;">
+      <img alt="WCA Hockey Logo" src="images/new_logo.png" style="height:60px;margin-right:1rem;" />
+      <div class="title">WCA Hockey League</div>
+    </div>
+    <div class="menu-icon" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <nav id="dropdownMenu">
+      <a href="index.html">Home</a>
+      <a href="league-stats.html">League Stats</a>
+      <a href="owner-application.html">Owner Application</a>
+      <a href="player-signup.html">Player Sign Up</a>
+      <a href="staff-directory.html">League Staff Directory</a>
+      <a href="rulebook.html">Rule Book</a>
+    </nav>
+  </header>
+
+  <div id="bracket-container"><p style="text-align:center; padding:2rem;">Loading bracket...</p></div>
+
+  <button class="back-button" onclick="location.href='league-stats.html'">Back to League Stats</button>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById('dropdownMenu');
+      nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.body.addEventListener('click', function(e) {
+      if (!e.target.closest('header')) {
+        document.getElementById('dropdownMenu').style.display = 'none';
+      }
+    });
+
+    const TEAM_NAME_MAP = {
+      NSH: "nashville_predators",
+      VAN: "vancouver_canucks",
+      VGK: "vegas_golden_knights",
+      MIN: "minnesota_wild",
+      PHI: "philadelphia_flyers",
+      CAR: "carolina_hurricanes",
+      MTL: "montreal_canadiens",
+      LAK: "los_angeles_kings"
+    };
+
+    const BRACKET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxYPUju_JYSpp_Tv3GbpTBXVNrd-uVjlTRkUuKHBFnR/dev?bracket=1";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch(BRACKET_ENDPOINT)
+        .then(response => response.json())
+        .then(data => renderBracket(data))
+        .catch(err => {
+          document.getElementById("bracket-container").innerHTML = "<p style='color:red;'>Error loading bracket.</p>";
+          console.error("Bracket load error:", err);
+        });
+    });
+
+    function renderBracket(matches) {
+      const rounds = { 1: [], 2: [], 3: [] };
+      matches.forEach(match => {
+        if (match["Round"]) {
+          rounds[match["Round"]].push(match);
+        }
+      });
+
+      const container = document.getElementById("bracket-container");
+      container.innerHTML = `
+        <div class="bracket">
+          ${[1, 2, 3].map(round => `
+            <div class="round">
+              <h3>Round ${round}</h3>
+              ${rounds[round].length > 0 ? rounds[round].map(renderMatchup).join("") : "<p>No data</p>"}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderMatchup(match) {
+      const teamA = match["Team A"];
+      const teamB = match["Team B"];
+      const winsA = match["Team A Wins"];
+      const winsB = match["Team B Wins"];
+      const winnerA = winsA > winsB;
+
+      const imgA = TEAM_NAME_MAP[teamA] ? `images/${TEAM_NAME_MAP[teamA]}.png` : "";
+      const imgB = TEAM_NAME_MAP[teamB] ? `images/${TEAM_NAME_MAP[teamB]}.png` : "";
+
+      return `
+        <div class="matchup">
+          <div class="team ${winnerA ? 'winner' : ''}">
+            <img src="${imgA}" alt="${teamA}" />
+            <span>${teamA} (${winsA})</span>
+          </div>
+          <div class="team ${!winnerA ? 'winner' : ''}">
+            <img src="${imgB}" alt="${teamB}" />
+            <span>${teamB} (${winsB})</span>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
