@@ -32,9 +32,40 @@
       background-color: #555;
     }
 
-    .bracket { display: flex; gap: 2rem; justify-content: center; margin-top: 2rem; font-family: Arial; flex-wrap: wrap; }
-    .round { display: flex; flex-direction: column; gap: 2rem; }
-    .matchup { display: flex; flex-direction: column; align-items: flex-start; border: 1px solid #ccc; padding: 0.5rem; background: #fff; width: 200px; border-radius: 8px; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
+    .bracket {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 4rem;
+      margin-top: 2rem;
+    }
+
+    .round {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4rem;
+      position: relative;
+      min-height: 100%;
+    }
+
+    .round:nth-child(2) {
+      justify-content: center;
+    }
+
+    .matchup {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      background: #fff;
+      width: 200px;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      min-height: 80px;
+    }
+
     .team { display: flex; align-items: center; gap: 0.5rem; }
     .team img { width: 32px; height: 32px; }
     .winner { font-weight: bold; color: green; }
@@ -118,12 +149,16 @@
       const container = document.getElementById("bracket-container");
       container.innerHTML = `
         <div class="bracket">
-          ${[1, 2, 3].map(round => `
-            <div class="round">
-              <h3>Round ${round}</h3>
-              ${rounds[round].length > 0 ? rounds[round].map(renderMatchup).join("") : "<p>No data</p>"}
-            </div>
-          `).join("")}
+          ${[1, 2, 3].map((round, idx) => {
+            const matchups = rounds[round];
+            const heightPad = idx === 1 ? Math.abs(rounds[1].length - rounds[2].length) * 40 : 0;
+            return `
+              <div class="round" style="${idx === 1 ? `padding-top:${heightPad}px` : ''}">
+                <h3>Round ${round}</h3>
+                ${matchups.length > 0 ? matchups.map(renderMatchup).join("") : "<p>No data</p>"}
+              </div>
+            `;
+          }).join("")}
         </div>
       `;
     }
