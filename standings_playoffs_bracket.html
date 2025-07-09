@@ -41,16 +41,10 @@
     }
 
     .round {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 4rem;
+      display: grid;
+      grid-auto-rows: 80px;
+      gap: 40px;
       position: relative;
-      min-height: 100%;
-    }
-
-    .round:nth-child(2) {
-      justify-content: center;
     }
 
     .matchup {
@@ -69,6 +63,10 @@
     .team { display: flex; align-items: center; gap: 0.5rem; }
     .team img { width: 32px; height: 32px; }
     .winner { font-weight: bold; color: green; }
+
+    .spacer {
+      height: 80px;
+    }
 
     @media (max-width: 700px) {
       header { flex-direction: column; align-items: flex-start; }
@@ -149,16 +147,12 @@
       const container = document.getElementById("bracket-container");
       container.innerHTML = `
         <div class="bracket">
-          ${[1, 2, 3].map((round, idx) => {
-            const matchups = rounds[round];
-            const heightPad = idx === 1 ? Math.abs(rounds[1].length - rounds[2].length) * 40 : 0;
-            return `
-              <div class="round" style="${idx === 1 ? `padding-top:${heightPad}px` : ''}">
-                <h3>Round ${round}</h3>
-                ${matchups.length > 0 ? matchups.map(renderMatchup).join("") : "<p>No data</p>"}
-              </div>
-            `;
-          }).join("")}
+          ${[1, 2, 3].map(round => `
+            <div class="round">
+              <h3>Round ${round}</h3>
+              ${rounds[round].length > 0 ? rounds[round].map(renderMatchup).join("<div class='spacer'></div>") : "<p>No data</p>"}
+            </div>
+          `).join("")}
         </div>
       `;
     }
