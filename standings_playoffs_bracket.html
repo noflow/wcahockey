@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>WCA Hockey League - Playoff Bracket</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #fafafa; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 4px solid #333; }
@@ -33,16 +33,17 @@
     }
 
     .bracket {
-      display: grid;
-      grid-template-columns: repeat(3, 250px);
-      gap: 40px;
+      display: flex;
       justify-content: center;
+      align-items: flex-start;
+      gap: 4rem;
       margin-top: 2rem;
     }
 
     .round {
       display: grid;
-      grid-template-rows: repeat(15, 60px);
+      grid-auto-rows: 80px;
+      gap: 40px;
       position: relative;
     }
 
@@ -56,11 +57,16 @@
       width: 200px;
       border-radius: 8px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      min-height: 80px;
     }
 
     .team { display: flex; align-items: center; gap: 0.5rem; }
     .team img { width: 32px; height: 32px; }
     .winner { font-weight: bold; color: green; }
+
+    .spacer {
+      height: 80px;
+    }
 
     @media (max-width: 700px) {
       header { flex-direction: column; align-items: flex-start; }
@@ -139,25 +145,19 @@
       });
 
       const container = document.getElementById("bracket-container");
-
-      const rowStartsR1 = [1, 5, 9, 13];
-      const rowStartsR2 = [3, 11];
-      const rowStartsR3 = [7];
-
-      const r1 = rounds[1].map((m, i) => `<div class="matchup" style="grid-row-start: ${rowStartsR1[i]}">${renderMatchupInner(m)}</div>`).join("");
-      const r2 = rounds[2].map((m, i) => `<div class="matchup" style="grid-row-start: ${rowStartsR2[i]}">${renderMatchupInner(m)}</div>`).join("");
-      const r3 = rounds[3].map((m, i) => `<div class="matchup" style="grid-row-start: ${rowStartsR3[i]}">${renderMatchupInner(m)}</div>`).join("");
-
       container.innerHTML = `
         <div class="bracket">
-          <div class="round"><h3 style="grid-row: 1;">Round 1</h3>${r1}</div>
-          <div class="round"><h3 style="grid-row: 1;">Round 2</h3>${r2}</div>
-          <div class="round"><h3 style="grid-row: 1;">Round 3</h3>${r3}</div>
+          ${[1, 2, 3].map(round => `
+            <div class="round">
+              <h3>Round ${round}</h3>
+              ${rounds[round].length > 0 ? rounds[round].map(renderMatchup).join("<div class='spacer'></div>") : "<p>No data</p>"}
+            </div>
+          `).join("")}
         </div>
       `;
     }
 
-    function renderMatchupInner(match) {
+    function renderMatchup(match) {
       const teamA = match["Team A"];
       const teamB = match["Team B"];
       const winsA = match["Team A Wins"];
@@ -168,13 +168,15 @@
       const imgB = TEAM_NAME_MAP[teamB] ? `images/${TEAM_NAME_MAP[teamB]}.png` : "";
 
       return `
-        <div class="team ${winnerA ? 'winner' : ''}">
-          <img src="${imgA}" alt="${teamA}" />
-          <span>${teamA} (${winsA})</span>
-        </div>
-        <div class="team ${!winnerA ? 'winner' : ''}">
-          <img src="${imgB}" alt="${teamB}" />
-          <span>${teamB} (${winsB})</span>
+        <div class="matchup">
+          <div class="team ${winnerA ? 'winner' : ''}">
+            <img src="${imgA}" alt="${teamA}" />
+            <span>${teamA} (${winsA})</span>
+          </div>
+          <div class="team ${!winnerA ? 'winner' : ''}">
+            <img src="${imgB}" alt="${teamB}" />
+            <span>${teamB} (${winsB})</span>
+          </div>
         </div>
       `;
     }
