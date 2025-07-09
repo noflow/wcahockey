@@ -42,8 +42,8 @@
 
     .round {
       display: grid;
-      grid-template-rows: repeat(15, 80px);
-      gap: 10px;
+      grid-template-rows: repeat(15, 60px);
+      position: relative;
     }
 
     .matchup {
@@ -61,11 +61,6 @@
     .team { display: flex; align-items: center; gap: 0.5rem; }
     .team img { width: 32px; height: 32px; }
     .winner { font-weight: bold; color: green; }
-
-    .spacer {
-      width: 200px;
-      height: 80px;
-    }
 
     @media (max-width: 700px) {
       header { flex-direction: column; align-items: flex-start; }
@@ -145,16 +140,19 @@
 
       const container = document.getElementById("bracket-container");
 
-      // Hardcode row starts for visual tree layout
-      const r1_html = rounds[1].map((m, i) => `<div class="matchup" style="grid-row-start: ${i * 3 + 1}">${renderMatchupInner(m)}</div>`).join("");
-      const r2_html = rounds[2].map((m, i) => `<div class="matchup" style="grid-row-start: ${i * 6 + 2}">${renderMatchupInner(m)}</div>`).join("");
-      const r3_html = rounds[3].map((m, i) => `<div class="matchup" style="grid-row-start: ${i * 12 + 4}">${renderMatchupInner(m)}</div>`).join("");
+      const rowStartsR1 = [1, 5, 9, 13];
+      const rowStartsR2 = [3, 11];
+      const rowStartsR3 = [7];
+
+      const r1 = rounds[1].map((m, i) => `<div class="matchup" style="grid-row-start: ${rowStartsR1[i]}">${renderMatchupInner(m)}</div>`).join("");
+      const r2 = rounds[2].map((m, i) => `<div class="matchup" style="grid-row-start: ${rowStartsR2[i]}">${renderMatchupInner(m)}</div>`).join("");
+      const r3 = rounds[3].map((m, i) => `<div class="matchup" style="grid-row-start: ${rowStartsR3[i]}">${renderMatchupInner(m)}</div>`).join("");
 
       container.innerHTML = `
         <div class="bracket">
-          <div class="round"><h3 style="grid-row: 1 / span 1;">Round 1</h3>${r1_html}</div>
-          <div class="round"><h3 style="grid-row: 1 / span 1;">Round 2</h3>${r2_html}</div>
-          <div class="round"><h3 style="grid-row: 1 / span 1;">Round 3</h3>${r3_html}</div>
+          <div class="round"><h3 style="grid-row: 1;">Round 1</h3>${r1}</div>
+          <div class="round"><h3 style="grid-row: 1;">Round 2</h3>${r2}</div>
+          <div class="round"><h3 style="grid-row: 1;">Round 3</h3>${r3}</div>
         </div>
       `;
     }
