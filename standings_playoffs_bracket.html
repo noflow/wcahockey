@@ -32,15 +32,98 @@
       background-color: #555;
     }
 
-    .bracket { display: flex; gap: 2rem; justify-content: center; margin-top: 2rem; font-family: Arial; flex-wrap: wrap; }
-    .round { display: flex; flex-direction: column; gap: 2rem; }
-    .matchup { display: flex; flex-direction: column; align-items: flex-start; border: 1px solid #ccc; padding: 0.5rem; background: #fff; width: 200px; border-radius: 8px; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
-    .team { display: flex; align-items: center; gap: 0.5rem; }
-    .team img { width: 32px; height: 32px; }
-    .winner { font-weight: bold; color: green; }
+    .bracket {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 4rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
 
-    @media (max-width: 700px) {
-      header { flex-direction: column; align-items: flex-start; }
+    .round {
+      display: grid;
+      gap: 2rem;
+      grid-auto-rows: minmax(100px, auto);
+    }
+
+    .matchup {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      background: #fff;
+      width: 200px;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .team img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .winner {
+      font-weight: bold;
+      color: green;
+    }
+
+    @media (max-width: 768px) {
+      .bracket {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+        padding: 1rem;
+      }
+
+      .round {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        border-left: 4px solid #ccc;
+        padding-left: 1rem;
+        position: relative;
+      }
+
+      .round::before {
+        content: '↓';
+        position: absolute;
+        top: -2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.5rem;
+        color: #aaa;
+      }
+
+      .round:first-child::before {
+        content: '';
+      }
+
+      .matchup {
+        width: 90%;
+        max-width: 300px;
+      }
+
+      .team img {
+        width: 24px;
+        height: 24px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .title {
+        font-size: 2.5rem;
+      }
     }
   </style>
 </head>
@@ -95,7 +178,6 @@
       NA: "na"
     };
 
-
     const BRACKET_ENDPOINT = "/data/bracket.json";
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -116,17 +198,34 @@
         }
       });
 
+      const paddedRounds = {
+        1: rounds[1],
+        2: padRound(rounds[2], rounds[1].length),
+        3: padRound(rounds[3], rounds[2].length)
+      };
+
       const container = document.getElementById("bracket-container");
       container.innerHTML = `
         <div class="bracket">
           ${[1, 2, 3].map(round => `
             <div class="round">
-              <h3>Round ${round}</h3>
-              ${rounds[round].length > 0 ? rounds[round].map(renderMatchup).join("") : "<p>No data</p>"}
+              <h3 style="text-align:center;">Round ${round}</h3>
+              ${paddedRounds[round].map(match => match ? renderMatchup(match) : `<div></div>`).join("")}
             </div>
           `).join("")}
         </div>
       `;
+    }
+
+    function padRound(roundMatches, referenceCount) {
+      const total = referenceCount / 2;
+      const padTop = Math.floor((total - roundMatches.length) * 1.5);
+      const padBottom = Math.ceil((total - roundMatches.length) * 1.5);
+      return [
+        ...Array(padTop).fill(null),
+        ...roundMatches,
+        ...Array(padBottom).fill(null)
+      ];
     }
 
     function renderMatchup(match) {
