@@ -91,18 +91,18 @@
       color: green;
     }
 
-    .round-content > div:empty {
-    height: 80px;
+    .round-content {
+      display: grid;
+      gap: 2rem;
+      grid-auto-rows: 80px;
     }
 
-    @media (max-width: 768px) {
-      .bracket {
-      display: flex;
-      flex-direction: column;
-      gap: 3rem;
-      padding: 1rem;
-      }
-      ...
+    .round-2 .round-content {
+      margin-top: 80px;
+    }
+
+    .round-3 .round-content {
+      margin-top: 120px;
     }
       .round {
         align-items: flex-start;
