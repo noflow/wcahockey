@@ -1,5 +1,6 @@
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -133,24 +134,23 @@
 </div>
 <div class="mock-section">
 <h3>Available Players to Nominate</h3>
-
-<input type="text" id="playerSearch" placeholder="Search players..." style="width: 100%; padding: 0.4rem; margin-bottom: 0.5rem; border-radius: 5px; border: 1px solid var(--primary);">
+<input id="playerSearch" placeholder="Search players..." style="width: 100%; padding: 0.4rem; margin-bottom: 0.5rem; border-radius: 5px; border: 1px solid var(--primary);" type="text"/>
 <div class="players-list" id="players">
-  <div class="player-line" data-main="Center" data-secondary="Right Wing">
+<div class="player-line" data-main="Center" data-secondary="Right Wing">
     Connor McDavid <span class="positions">Center / Right Wing</span>
-  </div>
-  <div class="player-line" data-main="Center" data-secondary="Left Wing">
+</div>
+<div class="player-line" data-main="Center" data-secondary="Left Wing">
     Leon Draisaitl <span class="positions">Center / Left Wing</span>
-  </div>
-  <div class="player-line" data-main="Center" data-secondary="">
+</div>
+<div class="player-line" data-main="Center" data-secondary="">
     Auston Matthews <span class="positions">Center</span>
-  </div>
-  <div class="player-line" data-main="Center" data-secondary="">
+</div>
+<div class="player-line" data-main="Center" data-secondary="">
     Nathan MacKinnon <span class="positions">Center</span>
-  </div>
-  <div class="player-line" data-main="Defense" data-secondary="">
+</div>
+<div class="player-line" data-main="Defense" data-secondary="">
     Cale Makar <span class="positions">Defense</span>
-  </div>
+</div>
 </div>
 <button disabled="" id="nominateBtn" onclick="nominatePlayer()">Nominate</button>
 <div class="mock-section">
@@ -169,7 +169,6 @@
 <p>🏒 Jane Smith - $4</p>
 </div>
 </div>
-
 <script>
 function toggleTheme() {
   const current = document.body.getAttribute('data-theme');
@@ -242,7 +241,6 @@ function nominatePlayer() {
   }
 }
 </script>
-
 <div class="mock-section">
 <h3>Logged-In Users</h3>
 <div class="log">
@@ -252,5 +250,37 @@ function nominatePlayer() {
 </div>
 </div>
 </div>
-</body>
+</div><script>
+let timerEl = document.getElementById("timer");
+let playerEl = document.getElementById("nominatedPlayer");
+let currentBidEl = document.querySelector("#nominatedPlayer").nextElementSibling;
+
+async function pollAuctionState() {
+  try {
+    const res = await fetch("/api/auction/state");
+    if (!res.ok) throw new Error("API error");
+
+    const data = await res.json();
+    if (data.active) {
+      playerEl.textContent = data.player || "--";
+      currentBidEl.textContent = `$${data.high_bid} by ${data.high_bidder || "???"}`;
+      if (data.time_remaining > 0) {
+        timerEl.textContent = `⏱️ ${data.time_remaining}s`;
+      } else {
+        timerEl.textContent = "⏱️ Time’s up!";
+      }
+    } else {
+      playerEl.textContent = "--";
+      currentBidEl.textContent = "--";
+      timerEl.textContent = "⏱️ --";
+    }
+  } catch (err) {
+    console.error("State polling failed:", err.message);
+    timerEl.textContent = "⏱️ --";
+  }
+}
+
+// Poll every second
+setInterval(pollAuctionState, 1000);
+</script></body>
 </html>
