@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Live Draft</title>
+<style>
+    :root {
+      --bg: #ffffff;
+      --text: #000000;
+      --primary: #0074d9;
+    }
+    [data-theme="dark"] {
+      --bg: #121212;
+      --text: #e0e0e0;
+      --primary: #1e90ff;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      transition: all 0.3s ease;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin: 0.25rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .mock-section {
+      border: 1px solid var(--primary);
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 8px;
+    }
+    .timer {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0.5rem 0;
+    }
+    .log, .roster {
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.05);
+      padding: 0.5rem;
+      border-radius: 5px;
+    }
+    .players-list {
+      max-height: 180px;
+      overflow-y: auto;
+      border: 1px solid var(--primary);
+      border-radius: 5px;
+      padding: 0.5rem;
+    }
+    .player-line {
+      padding: 0.3rem;
+      cursor: pointer;
+    }
+    .player-line:hover,
+    .player-line.selected {
+      background-color: var(--primary);
+      color: white;
+    }
+    .simulate-phone {
+      max-width: 400px;
+      margin: auto;
+    }
+    .top-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+@media (max-width: 600px) {
+  body.simulate-phone {
+    font-size: 0.9rem;
+  }
+  .mock-section {
+    padding: 0.5rem;
+  }
+}
+.top-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.player-line .positions {
+  font-size: 0.9em;
+  color: gray;
+  margin-left: 0.5rem;
+}
+
+</style>
+</head>
+<body>
+<div id="container">
+<header>
+<h1>Live Auction Draft</h1>
+<div class="top-buttons">
+<button onclick="toggleTheme()">🌓 Toggle Theme</button>
+<button onclick="toggleSim()">📱 Toggle Phone/Desktop</button>
+<button onclick="logout()">Logout</button>
+</div>
+</header>
+<div class="mock-section">
+<h2>Current Player</h2>
+<p><strong>Name:</strong> <span id="nominatedPlayer">--</span></p>
+<p><strong>Current Bid:</strong> $4 by Team Blue</p>
+<div class="timer" id="timer">⏱️ --</div>
+</div>
+<div class="mock-section bid-controls">
+<h3>Bidding Controls</h3>
+<button>Min Bid</button>
+<input id="flashBidInput" placeholder="$" style="width: 60px;" type="number"/>
+<button onclick="alert('Flash bid placed: $' + document.getElementById('flashBidInput').value)">Flash Bid</button>
+<input id="autoBidInput" placeholder="Max $" style="width: 80px;" type="number"/>
+<button onclick="alert('Auto bid set to: $' + document.getElementById('autoBidInput').value)">Auto Bid</button>
+<button>Match Bid</button>
+</div>
+<div class="mock-section">
+<h3>Available Players to Nominate</h3>
+<input id="playerSearch" placeholder="Search players..." style="width: 100%; padding: 0.4rem; margin-bottom: 0.5rem; border-radius: 5px; border: 1px solid var(--primary);" type="text"/>
+<div class="players-list" id="players">
+<div class="player-line" data-main="Center" data-secondary="Right Wing">
+    Connor McDavid <span class="positions">Center / Right Wing</span>
+</div>
+<div class="player-line" data-main="Center" data-secondary="Left Wing">
+    Leon Draisaitl <span class="positions">Center / Left Wing</span>
+</div>
+<div class="player-line" data-main="Center" data-secondary="">
+    Auston Matthews <span class="positions">Center</span>
+</div>
+<div class="player-line" data-main="Center" data-secondary="">
+    Nathan MacKinnon <span class="positions">Center</span>
+</div>
+<div class="player-line" data-main="Defense" data-secondary="">
+    Cale Makar <span class="positions">Defense</span>
+</div>
+</div>
+<button disabled="" id="nominateBtn" onclick="nominatePlayer()">Nominate</button>
+<div class="mock-section">
+<h3>Live Log</h3>
+<div class="log">
+<p>🚨 Team Red nominated John Doe for $1</p>
+<p>💰 Team Blue bid $4</p>
+</div>
+</div>
+<div class="mock-section">
+<h3>Your Team</h3>
+<p><strong>Team:</strong> Team Red</p>
+<p><strong>Remaining Salary:</strong> $496</p>
+<p><strong>Roster Size:</strong> 1</p>
+<div class="roster">
+<p>🏒 Jane Smith - $4</p>
+</div>
+</div>
+<script>
+function toggleTheme() {
+  const current = document.body.getAttribute('data-theme');
+  document.body.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+}
+
+function toggleSim() {
+  const container = document.getElementById("container");
+  container.classList.toggle("simulate-phone");
+}
+
+function logout() {
+  document.cookie = 'user=; Max-Age=0';
+  location.href = '/';
+}
+
+let seconds = 10;
+let countdownInterval;
+const timerEl = document.getElementById("timer");
+timerEl.textContent = "⏱️ --";
+
+const players = document.querySelectorAll(".player-line");
+const nominateBtn = document.getElementById("nominateBtn");
+let selectedPlayer = null;
+
+players.forEach(line => {
+  line.addEventListener("click", () => {
+    players.forEach(p => p.classList.remove("selected"));
+    line.classList.add("selected");
+
+    const main = line.getAttribute("data-main");
+    const sec = line.getAttribute("data-secondary");
+    const name = line.childNodes[0].textContent.trim();
+    const label = sec ? `${name}   ${main} / ${sec}` : `${name}   ${main}`;
+
+    selectedPlayer = label;
+    nominateBtn.disabled = false;
+  });
+});
+
+function startTimer() {
+  seconds = 10;
+  timerEl.textContent = `⏱️ ${seconds}`;
+  countdownInterval = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(countdownInterval);
+      timerEl.textContent = "⏱️ Time's up!";
+    } else {
+      timerEl.textContent = `⏱️ ${seconds}`;
+    }
+  }, 1000);
+}
+
+
+document.getElementById("playerSearch").addEventListener("input", function () {
+  const query = this.value.toLowerCase();
+  players.forEach(line => {
+    const name = line.childNodes[0].textContent.trim().toLowerCase();
+    line.style.display = name.startsWith(query) ? "block" : "none";
+  });
+});
+
+
+function nominatePlayer() {
+  if (selectedPlayer) {
+    alert("You nominated " + selectedPlayer);
+    document.getElementById("nominatedPlayer").textContent = selectedPlayer;
+    startTimer();
+  }
+}
+</script>
+<div class="mock-section">
+<h3>Logged-In Users</h3>
+<div class="log">
+<p>👤 slur1979</p>
+<p>👤 GM88</p>
+<p>👤 TeamRedOwner</p>
+</div>
+</div>
+</div>
+</div><script>
+// timerEl already declared earlier — reuse
+let playerEl = document.getElementById("nominatedPlayer");
+let currentBidEl = document.querySelector("#nominatedPlayer").nextElementSibling;
+
+async function pollAuctionState() {
+  try {
+    const res = await fetch("https://api.wcahockey.com/api/auction/state", { credentials: "include" });
+    if (!res.ok) throw new Error("API error");
+
+    const data = await res.json();
+    if (data.active) {
+      playerEl.textContent = data.player || "--";
+      currentBidEl.textContent = `$${data.high_bid} by ${data.high_bidder || "???"}`;
+      if (data.time_remaining > 0) {
+        timerEl.textContent = `⏱️ ${data.time_remaining}s`;
+      } else {
+        timerEl.textContent = "⏱️ Time’s up!";
+      }
+    } else {
+      playerEl.textContent = "--";
+      currentBidEl.textContent = "--";
+      timerEl.textContent = "⏱️ --";
+    }
+  } catch (err) {
+    console.error("State polling failed:", err.message);
+    timerEl.textContent = "⏱️ --";
+  }
+}
+
+// Poll every second
+setInterval(pollAuctionState, 1000);
+</script><script>
+async function showAdminButtonIfAllowed() {
+  try {
+    const res = await fetch("https://api.wcahockey.com/api/roles", { credentials: "include" });
+    if (!res.ok) return;
+    const roles = await res.json();
+    if (roles.isAdmin || roles.isCommissioner) {
+      const btn = document.createElement("button");
+      btn.id = "adminSettingsBtn";
+      btn.textContent = "⚙️ Admin Settings";
+      btn.style = "position:absolute; top:1rem; right:6rem;";
+      btn.onclick = () => window.location.href = "/draft/admin.html";
+      document.body.appendChild(btn);
+    }
+  } catch (err) {
+    console.error("Role check failed:", err);
+  }
+}
+
+console.log("🔍 Cookies:", document.cookie);
+
+console.log("🍪 document.cookie:", document.cookie);
+fetch("https://api.wcahockey.com/api/me", { credentials: "include" })
+  .then(res => res.text())
+  .then(text => console.log("🧪 /api/me response:", text))
+  .catch(err => console.error("⚠️ /api/me error:", err));
+
+fetch("https://api.wcahockey.com/api/roles", { credentials: "include" })
+  .then(res => {
+    if (!res.ok) {
+      console.error("❌ /api/roles failed:", res.status);
+      return res.text().then(text => { throw new Error(text); });
+    }
+    return res.json();
+  })
+  .then(console.log)
+  .catch(err => console.error("❌ Fetch error:", err));
+
+showAdminButtonIfAllowed();
+</script></body>
+</html>
