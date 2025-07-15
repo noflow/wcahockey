@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Draft Settings</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; max-width: 600px; margin: auto; }
+    h1 { font-size: 1.5em; }
+    label { display: block; margin: 1em 0 0.25em; }
+    input[type="number"], input[type="text"] { width: 100%; padding: 0.5em; }
+    button { margin-top: 1.5em; padding: 0.75em 1.5em; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Draft Admin Settings</h1>
+  <form id="settingsForm">
+    <label for="timerDuration">Main Clock (seconds)</label>
+    <input type="number" id="timerDuration" name="timerDuration" min="5" max="120"/>
+
+    <label for="resetClock">Reset Clock (seconds)</label>
+    <input type="number" id="resetClock" name="resetClock" min="5" max="60"/>
+
+    <label for="nominationCost">Minimum Nomination Cost</label>
+    <input type="number" id="nominationCost" name="nominationCost" min="1"/>
+
+    <label for="minRosterSize">Min Roster Size</label>
+    <input type="number" id="minRosterSize" name="minRosterSize" min="1"/>
+
+    <label for="maxRosterSize">Max Roster Size</label>
+    <input type="number" id="maxRosterSize" name="maxRosterSize" min="1"/>
+
+    <label>
+      <input type="checkbox" id="matchBidEnabled" name="matchBidEnabled"/>
+      Enable Match Bid
+    </label>
+
+    <button type="submit">💾 Save Settings</button>
+  </form>
+
+  <p id="status" style="margin-top: 1em;"></p>
+
+  <script>
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/admin/settings");
+        if (!res.ok) throw new Error("Unauthorized or failed to fetch");
+        const data = await res.json();
+        for (const key in data) {
+          const el = document.getElementById(key);
+          if (el) {
+            if (el.type === "checkbox") {
+              el.checked = data[key];
+            } else {
+              el.value = data[key];
+            }
+          }
+        }
+      } catch (err) {
+        document.getElementById("status").textContent = "⚠️ Failed to load settings.";
+        console.error(err);
+      }
+    }
+
+    document.getElementById("settingsForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      const body = {};
+      for (const [key, value] of form.entries()) {
+        body[key] = isNaN(value) ? value : Number(value);
+      }
+      body.matchBidEnabled = document.getElementById("matchBidEnabled").checked;
+
+      try {
+        const res = await fetch("/api/admin/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error("Update failed");
+        document.getElementById("status").textContent = "✅ Settings saved successfully!";
+      } catch (err) {
+        document.getElementById("status").textContent = "❌ Failed to save settings.";
+        console.error(err);
+      }
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>
