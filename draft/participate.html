@@ -285,7 +285,7 @@ setInterval(pollAuctionState, 1000);
 </script><script>
 async function showAdminButtonIfAllowed() {
   try {
-    const res = await fetch("/api/roles");
+    const res = await fetch("https://api.wcahockey.com/api/roles", { credentials: "include" });
     if (!res.ok) return;
     const roles = await res.json();
     if (roles.isAdmin || roles.isCommissioner) {
