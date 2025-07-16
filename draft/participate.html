@@ -291,10 +291,10 @@ async function showAdminButtonIfAllowed() {
     if (roles.isAdmin || roles.isCommissioner) {
       const btn = document.createElement("button");
       btn.id = "adminSettingsBtn";
-      btn.textContent = "⚙️";
-      btn.style = "position:absolute; top:2.1rem; right:32rem;";
+      btn.textContent = "⚙️ Admin Settings";
       btn.onclick = () => window.location.href = "/draft/admin.html";
-      document.body.appendChild(btn);
+      const topButtons = document.querySelector(".top-buttons");
+      if (topButtons) topButtons.appendChild(btn);
     }
   } catch (err) {
     console.error("Role check failed:", err);
