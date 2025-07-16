@@ -42,9 +42,10 @@
   <p id="status" style="margin-top: 1em;"></p>
 
   <script>
+  const API_BASE = "https://api.wcahockey.com";
     async function loadSettings() {
       try {
-        const res = await fetch("https://api.wcahockey.com/api/admin/settings", { credentials: "include" });
+        const res = await fetch(`${API_BASE}/api/admin/settings"`, { credentials: "include" });
         if (!res.ok) throw new Error("Unauthorized or failed to fetch");
         const data = await res.json();
         for (const key in data) {
@@ -73,7 +74,7 @@
       body.matchBidEnabled = document.getElementById("matchBidEnabled").checked;
 
       try {
-        const res = await fetch("/api/admin/settings", {
+        const res = await fetch(`${API_BASE}/api/admin/settings"`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
@@ -112,9 +113,10 @@
   <button onclick="togglePause()" style="margin-left: 1em;">Pause / Resume Nomination</button>
 
   <script>
+  const API_BASE = "https://api.wcahockey.com";
     async function forceNominate() {
       const player = document.getElementById("forceNominateInput").value;
-      const res = await fetch("/api/admin/force-nominate", {
+      const res = await fetch(`${API_BASE}/api/admin/force-nominate"`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ player })
@@ -124,13 +126,13 @@
     }
 
     async function skipNominator() {
-      const res = await fetch("/api/admin/skip-nominator", { method: "POST" });
+      const res = await fetch(`${API_BASE}/api/admin/skip-nominator"`, { method: "POST" });
       const data = await res.json();
       alert("⏭ " + (data.status || "Skipped"));
     }
 
     async function togglePause() {
-      const res = await fetch("/api/admin/toggle-pause", { method: "POST" });
+      const res = await fetch(`${API_BASE}/api/admin/toggle-pause"`, { method: "POST" });
       const data = await res.json();
       alert(data.paused ? "⏸ Paused" : "▶️ Resumed");
     }
