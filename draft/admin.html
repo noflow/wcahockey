@@ -44,7 +44,7 @@
   <script>
     async function loadSettings() {
       try {
-        const res = await fetch("/api/admin/settings");
+        const res = await fetch("https://api.wcahockey.com/api/admin/settings", { credentials: "include" });
         if (!res.ok) throw new Error("Unauthorized or failed to fetch");
         const data = await res.json();
         for (const key in data) {
