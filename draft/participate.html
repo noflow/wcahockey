@@ -106,6 +106,37 @@
 }
 
 </style>
+
+<style>
+.timer-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 1rem auto;
+}
+.timer-circle {
+  position: absolute;
+  top: 0; left: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 5px solid #4caf50;
+  animation: none;
+  box-sizing: border-box;
+}
+.timer-flash {
+  animation: flash-red 1s step-start infinite;
+}
+@keyframes countdown-ring {
+  from { transform: scale(1); border-color: #4caf50; }
+  to { transform: scale(1.2); border-color: red; }
+}
+@keyframes flash-red {
+  0%, 100% { color: red; }
+  50% { color: black; }
+}
+</style>
+
 </head>
 <body>
 <div id="container">
@@ -121,7 +152,7 @@
 <h2>Current Player</h2>
 <p><strong>Name:</strong> <span id="nominatedPlayer">--</span></p>
 <p><strong>Current Bid:</strong> $4 by Team Blue</p>
-<div class="timer" id="timer">⏱️ --</div>
+<div class="timer-wrapper"><div class="timer-circle" id="timerCircle"></div><div class="timer" id="timer">⏱️ --</div>
 </div>
 <div class="mock-section bid-controls">
 <h3>Bidding Controls</h3>
@@ -314,5 +345,66 @@ fetch("https://api.wcahockey.com/api/roles", { credentials: "include" })
   .catch(err => console.error("❌ Fetch error:", err));
 
 showAdminButtonIfAllowed();
-</script></body>
+</script>
+<div id="nominatorPopup" style="display: none; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
+  background: #222; color: white; padding: 2em; border-radius: 10px; font-size: 1.5em; text-align: center; z-index: 1000;">
+  <span id="nominatorMessage"></span>
+</div>
+
+
+<script>
+let currentUserId = null;
+
+async function getCurrentUser() {
+  try {
+    const res = await fetch("https://api.wcahockey.com/api/me", { credentials: "include" });
+    const data = await res.json();
+    currentUserId = data.id;
+  } catch (err) {
+    console.error("Failed to fetch user", err);
+  }
+}
+getCurrentUser();
+
+async function pollAuctionState() {
+  try {
+    const res = await fetch("https://api.wcahockey.com/api/auction/state", { credentials: "include" });
+    const data = await res.json();
+
+    const nom = data.currentNominator;
+    const teamEls = document.querySelectorAll(".team-entry");
+    teamEls.forEach(el => el.classList.remove("highlight-nominator"));
+
+    if (nom && nom.userId) {
+      if (nom.userId === currentUserId || nom.altUserId === currentUserId) {
+        document.getElementById("nominatorMessage").textContent = `${nom.team} (${nom.displayName}) — You’re on the clock!`;
+        document.getElementById("nominatorPopup").style.display = "block";
+      } else {
+        document.getElementById("nominatorPopup").style.display = "none";
+      }
+
+      const nomTeamEl = document.querySelector(`[data-team-id="${nom.teamId}"]`);
+      if (nomTeamEl) nomTeamEl.classList.add("highlight-nominator");
+    }
+  } catch (err) {
+    console.error("State polling failed:", err);
+  }
+}
+setInterval(pollAuctionState, 5000);
+</script>
+
+<style>
+.highlight-nominator {
+  outline: 3px solid gold;
+  border-radius: 8px;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% { outline-color: gold; }
+  50% { outline-color: orange; }
+  100% { outline-color: gold; }
+}
+</style>
+
+</body>
 </html>
