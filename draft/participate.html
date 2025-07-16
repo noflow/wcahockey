@@ -138,6 +138,40 @@
 </style>
 
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<style>
+.timer-wrapper {
+  width: 100px;
+  height: 100px;
+  margin: 1rem auto;
+}
+
+#timerSvg {
+  transform: rotate(-90deg);
+}
+
+.timer-bg {
+  fill: none;
+  stroke: #ddd;
+  stroke-width: 10;
+}
+
+.timer-progress {
+  fill: none;
+  stroke: green;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 282.6;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+}
+
+#timerText {
+  font-weight: bold;
+  fill: white;
+}
+</style>
+
 </head>
 <body>
 <div id="container">
@@ -153,7 +187,7 @@
 <h2>Current Player</h2>
 <p><strong>Name:</strong> <span id="nominatedPlayer">--</span></p>
 <p><strong>Current Bid:</strong> $4 by Team Blue</p>
-<div class="timer-wrapper"><div class="timer-circle" id="timerCircle"></div><div class="timer" id="timer">⏱️ --</div>
+<div class="timer" id="timer">⏱️ --</div>
 </div>
 <div class="mock-section bid-controls">
 <h3>Bidding Controls</h3>
@@ -439,6 +473,46 @@ socket.on("timer:update", (data) => {
   console.log("⏱ Timer update:", data);
   if (typeof startTimer === "function") startTimer(data.secondsRemaining || 30);
 });
+</script>
+
+
+<div class="timer-wrapper">
+  <svg id="timerSvg" width="100" height="100">
+    <circle class="timer-bg" cx="50" cy="50" r="45"/>
+    <circle class="timer-progress" id="timerProgress" cx="50" cy="50" r="45"/>
+    <text id="timerText" x="50%" y="55%" text-anchor="middle" font-size="20px" dy=".3em">--</text>
+  </svg>
+</div>
+
+
+<script>
+let countdownInterval;
+function startTimer(duration = 30) {
+  let remaining = duration;
+  const text = document.getElementById("timerText");
+  const circle = document.getElementById("timerProgress");
+  const full = 2 * Math.PI * 45;
+
+  clearInterval(countdownInterval);
+  circle.style.strokeDasharray = full;
+  circle.style.strokeDashoffset = 0;
+  text.textContent = `⏱️ ${remaining}`;
+
+  countdownInterval = setInterval(() => {
+    remaining--;
+    text.textContent = `⏱️ ${remaining}`;
+    circle.style.strokeDashoffset = full * (1 - remaining / duration);
+
+    if (remaining <= 5) circle.style.stroke = "red";
+    else if (remaining <= 15) circle.style.stroke = "orange";
+    else circle.style.stroke = "green";
+
+    if (remaining <= 0) {
+      clearInterval(countdownInterval);
+      text.textContent = "⏱️ Time’s up!";
+    }
+  }, 1000);
+}
 </script>
 
 </body>
