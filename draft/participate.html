@@ -137,6 +137,7 @@
 }
 </style>
 
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
 <div id="container">
@@ -405,6 +406,40 @@ setInterval(pollAuctionState, 5000);
   100% { outline-color: gold; }
 }
 </style>
+
+
+<script>
+const socket = io("https://api.wcahockey.com", { withCredentials: true });
+
+socket.on("player:nominated", (data) => {
+  console.log("📢 New nomination:", data);
+  const nominatedPlayer = document.getElementById("nominatedPlayer");
+  if (nominatedPlayer) nominatedPlayer.textContent = data.player;
+
+  const bidDisplay = document.querySelector("#nominatedPlayer + div");
+  if (bidDisplay) bidDisplay.textContent = `Starting Bid: $${data.amount}`;
+
+  // Optional: highlight team
+  const teamEls = document.querySelectorAll(".team-entry");
+  teamEls.forEach(el => el.classList.remove("highlight-nominator"));
+  const match = [...teamEls].find(el => el.textContent.includes(data.team));
+  if (match) match.classList.add("highlight-nominator");
+
+  // Restart timer visual
+  if (typeof startTimer === "function") startTimer();
+});
+
+socket.on("bid:update", (data) => {
+  console.log("💰 Bid updated:", data);
+  const bidDisplay = document.querySelector("#nominatedPlayer + div");
+  if (bidDisplay) bidDisplay.textContent = `Current Bid: $${data.highBid} by ${data.highBidder}`;
+});
+
+socket.on("timer:update", (data) => {
+  console.log("⏱ Timer update:", data);
+  if (typeof startTimer === "function") startTimer(data.secondsRemaining || 30);
+});
+</script>
 
 </body>
 </html>
