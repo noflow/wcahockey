@@ -485,6 +485,7 @@ socket.on("timer:update", (data) => {
 </div>
 
 
+
 <script>
 let countdownInterval;
 function startTimer(duration = 30) {
@@ -496,24 +497,31 @@ function startTimer(duration = 30) {
   clearInterval(countdownInterval);
   circle.style.strokeDasharray = full;
   circle.style.strokeDashoffset = 0;
-  text.textContent = `⏱️ ${remaining}`;
+  text.textContent = `${remaining}s`;
 
-  countdownInterval = setInterval(() => {
-    remaining--;
-    text.textContent = `⏱️ ${remaining}`;
-    circle.style.strokeDashoffset = full * (1 - remaining / duration);
+  const update = () => {
+    const progress = full * (remaining / duration);
+    circle.style.strokeDashoffset = full - progress;
 
     if (remaining <= 5) circle.style.stroke = "red";
     else if (remaining <= 15) circle.style.stroke = "orange";
     else circle.style.stroke = "green";
 
+    text.textContent = `${remaining}s`;
+
     if (remaining <= 0) {
       clearInterval(countdownInterval);
       text.textContent = "⏱️ Time’s up!";
     }
-  }, 1000);
+
+    remaining--;
+  };
+
+  update();
+  countdownInterval = setInterval(update, 1000);
 }
 </script>
+
 
 </body>
 </html>
