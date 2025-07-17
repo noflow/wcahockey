@@ -317,13 +317,14 @@ function nominatePlayer() {
 </div>
 </div>
 </div><script>
+<script>
 // timerEl already declared earlier — reuse
 let playerEl = document.getElementById("nominatedPlayer");
 let currentBidEl = document.querySelector("#nominatedPlayer").nextElementSibling;
 
 async function pollAuctionState() {
   try {
-    const res = await fetch("/api/auction/state");
+    const res = await fetch("/api/auction/state");  // ❌ WRONG ENDPOINT
     if (!res.ok) throw new Error("API error");
 
     const data = await res.json();
@@ -348,7 +349,9 @@ async function pollAuctionState() {
 
 // Poll every second
 setInterval(pollAuctionState, 1000);
-</script><script>
+</script>
+
+<script>
 async function showAdminButtonIfAllowed() {
   try {
     const res = await fetch("https://api.wcahockey.com/api/roles", { credentials: "include" });
