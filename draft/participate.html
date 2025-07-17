@@ -323,7 +323,7 @@ let currentBidEl = document.querySelector("#nominatedPlayer").nextElementSibling
 
 async function pollAuctionState() {
   try {
-    const res = await fetch("/api/auction/state");
+    const res = await fetch("https://api.wcahockey.com/api/auction/state", { credentials: "include" });
     if (!res.ok) throw new Error("API error");
 
     const data = await res.json();
