@@ -236,7 +236,6 @@
 </div>
 </div>
 <script>
-const API_BASE = "https://api.wcahockey.com";
 function toggleTheme() {
   const current = document.body.getAttribute('data-theme');
   document.body.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
@@ -324,7 +323,7 @@ let currentBidEl = document.querySelector("#nominatedPlayer").nextElementSibling
 
 async function pollAuctionState() {
   try {
-    const res = await fetch(`${API_BASE}/api/auction/state");
+    const res = await fetch("/api/auction/state");
     if (!res.ok) throw new Error("API error");
 
     const data = await res.json();
