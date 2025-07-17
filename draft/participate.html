@@ -318,38 +318,6 @@ function nominatePlayer() {
 </div>
 </div><script>
 <script>
-// timerEl already declared earlier — reuse
-let playerEl = document.getElementById("nominatedPlayer");
-let currentBidEl = document.querySelector("#nominatedPlayer").nextElementSibling;
-
-async function pollAuctionState() {
-  try {
-    const res = await fetch("/api/auction/state");  // ❌ WRONG ENDPOINT
-    if (!res.ok) throw new Error("API error");
-
-    const data = await res.json();
-    if (data.active) {
-      playerEl.textContent = data.player || "--";
-      currentBidEl.textContent = `$${data.high_bid} by ${data.high_bidder || "???"}`;
-      if (data.time_remaining > 0) {
-        timerEl.textContent = `⏱️ ${data.time_remaining}s`;
-      } else {
-        timerEl.textContent = "⏱️ Time’s up!";
-      }
-    } else {
-      playerEl.textContent = "--";
-      currentBidEl.textContent = "--";
-      timerEl.textContent = "⏱️ --";
-    }
-  } catch (err) {
-    console.error("State polling failed:", err.message);
-    timerEl.textContent = "⏱️ --";
-  }
-}
-
-// Poll every second
-setInterval(pollAuctionState, 1000);
-</script>
 
 <script>
 async function showAdminButtonIfAllowed() {
