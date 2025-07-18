@@ -531,7 +531,7 @@ function addToBidHistory(entry) {
 
 async function loadInitialHistory() {
   try {
-    const res = await fetch("https://api.wcahockey.com/auction/history");
+    const res = await fetch("https://api.wcahockey.com/api/auction/history");
     const data = await res.json();
     data.slice(-50).forEach(addToBidHistory);
   } catch (err) {
