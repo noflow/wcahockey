@@ -172,7 +172,7 @@
 <body>
 <div id="container">
 <header>
-<h1>Live Auction Draft</h1>
+<h1>Live Auction Draft</h1><div id="socketStatus" style="margin-bottom: 10px; font-weight: bold; color: green;">🟢 Live Connection</div><div class="mock-section" id="teamLiveData"><h3>📊 Your Team Info</h3><div id="teamInfo"></div></div>
 <div class="top-buttons">
 <button onclick="toggleTheme()">🌓 Toggle Theme</button>
 <button onclick="toggleSim()">📱 Toggle Phone/Desktop</button>
@@ -534,6 +534,37 @@ socket.on("bid:update", (data) => {
     bidder: data.highBidder,
     timestamp: Date.now() / 1000
   });
+});
+</script><script>
+// WebSocket connection indicator
+socket.on("connect", () => {
+  const el = document.getElementById("socketStatus");
+  el.textContent = "🟢 Live Connection";
+  el.style.color = "green";
+});
+
+socket.on("disconnect", () => {
+  const el = document.getElementById("socketStatus");
+  el.textContent = "🔴 Disconnected";
+  el.style.color = "red";
+});
+
+// Live team cap + roster updates
+socket.on("team:update", (data) => {
+  const el = document.getElementById("teamInfo");
+  if (!data || !data.teamName) {
+    el.innerHTML = "<p>No team data available.</p>";
+    return;
+  }
+
+  let html = `
+    <p><strong>Team:</strong> ${data.teamName}</p>
+    <p><strong>Roster:</strong> ${data.rosterCount} / ${data.maxRoster}</p>
+    <p><strong>Cap Remaining:</strong> $${data.salaryRemaining}</p>
+    <p><strong>Players:</strong></p>
+    <ul>${data.players.map(p => `<li>${p.name} ($${p.cost})</li>`).join("")}</ul>
+  `;
+  el.innerHTML = html;
 });
 </script></body>
 </html>
