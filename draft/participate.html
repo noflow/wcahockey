@@ -550,6 +550,7 @@ socket.on("bid:update", (data) => {
 });
 </script><script>
 socket.on("team:update", (data) => {
+  console.log("📡 Received team:update:", data); // <== Add this line
   const section = document.getElementById("yourTeam");
   const el = document.getElementById("teamInfo");
   if (!data || !data.isGMOrOwner) {
@@ -557,7 +558,7 @@ socket.on("team:update", (data) => {
     return;
   }
   section.style.display = "block";
-  updateUserHeader(data.role);
+  updateUserHeader(data.role || "Unknown");
   let html = `
     <p><strong>Team:</strong> ${data.teamName}</p>
     <p><strong>Remaining Salary:</strong> $${data.salaryRemaining}</p>
