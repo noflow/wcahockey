@@ -106,11 +106,73 @@
 }
 
 </style>
+<style>
+.timer-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 1rem auto;
+}
+.timer-circle {
+  position: absolute;
+  top: 0; left: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 5px solid #4caf50;
+  animation: none;
+  box-sizing: border-box;
+}
+.timer-flash {
+  animation: flash-red 1s step-start infinite;
+}
+@keyframes countdown-ring {
+  from { transform: scale(1); border-color: #4caf50; }
+  to { transform: scale(1.2); border-color: red; }
+}
+@keyframes flash-red {
+  0%, 100% { color: red; }
+  50% { color: black; }
+}
+</style>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<style>
+.timer-wrapper {
+  width: 100px;
+  height: 100px;
+  margin: 1rem auto;
+}
+
+#timerSvg {
+  transform: rotate(-90deg);
+}
+
+.timer-bg {
+  fill: none;
+  stroke: #ddd;
+  stroke-width: 10;
+}
+
+.timer-progress {
+  fill: none;
+  stroke: green;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 282.6;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+}
+
+#timerText {
+  font-weight: bold;
+  fill: white;
+}
+</style>
 </head>
 <body>
 <div id="container">
 <header>
-<h1>Live Auction Draft</h1>
+<h1>Live Auction Draft</h1><div id="socketStatus" style="margin-bottom: 10px; font-weight: bold; color: green;">🟢 Live Connection</div>
 <div class="top-buttons">
 <button onclick="toggleTheme()">🌓 Toggle Theme</button>
 <button onclick="toggleSim()">📱 Toggle Phone/Desktop</button>
@@ -241,7 +303,7 @@ function nominatePlayer() {
   }
 }
 </script>
-<div class="mock-section">
+<div class="mock-section" style="max-height: 250px; overflow-y: auto;"><h3>📜 Bid History</h3><ul id="bidHistoryList" style="list-style: none; padding-left: 0; margin: 0;"></ul></div><div class="mock-section">
 <h3>Logged-In Users</h3>
 <div class="log">
 <p>👤 slur1979</p>
@@ -280,9 +342,7 @@ async function pollAuctionState() {
   }
 }
 
-// Poll every second
-setInterval(pollAuctionState, 1000);
-</script><script>
+// Poll every second</script><script>
 async function showAdminButtonIfAllowed() {
   try {
     const res = await fetch("https://api.wcahockey.com/api/roles", { credentials: "include" });
@@ -292,9 +352,9 @@ async function showAdminButtonIfAllowed() {
       const btn = document.createElement("button");
       btn.id = "adminSettingsBtn";
       btn.textContent = "⚙️ Admin Settings";
-      btn.style = "position:absolute; top:1rem; right:6rem;";
       btn.onclick = () => window.location.href = "/draft/admin.html";
-      document.body.appendChild(btn);
+      const topButtons = document.querySelector(".top-buttons");
+      if (topButtons) topButtons.appendChild(btn);
     }
   } catch (err) {
     console.error("Role check failed:", err);
@@ -302,13 +362,6 @@ async function showAdminButtonIfAllowed() {
 }
 
 console.log("🔍 Cookies:", document.cookie);
-
-console.log("🍪 document.cookie:", document.cookie);
-fetch("https://api.wcahockey.com/api/me", { credentials: "include" })
-  .then(res => res.text())
-  .then(text => console.log("🧪 /api/me response:", text))
-  .catch(err => console.error("⚠️ /api/me error:", err));
-
 fetch("https://api.wcahockey.com/api/roles", { credentials: "include" })
   .then(res => {
     if (!res.ok) {
@@ -321,5 +374,185 @@ fetch("https://api.wcahockey.com/api/roles", { credentials: "include" })
   .catch(err => console.error("❌ Fetch error:", err));
 
 showAdminButtonIfAllowed();
+</script>
+<div id="nominatorPopup" style="display: none; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
+  background: #222; color: white; padding: 2em; border-radius: 10px; font-size: 1.5em; text-align: center; z-index: 1000;">
+<span id="nominatorMessage"></span>
+</div>
+<script>
+let currentUserId = null;
+
+async function getCurrentUser() {
+  try {
+    const res = await fetch("https://api.wcahockey.com/api/me", { credentials: "include" });
+    const data = await res.json();
+    currentUserId = data.id;
+  } catch (err) {
+    console.error("Failed to fetch user", err);
+  }
+}
+getCurrentUser();
+
+async function pollAuctionState() {
+  try {
+    const res = await fetch("https://api.wcahockey.com/api/auction/state", { credentials: "include" });
+    const data = await res.json();
+
+    const nom = data.currentNominator;
+    const teamEls = document.querySelectorAll(".team-entry");
+    teamEls.forEach(el => el.classList.remove("highlight-nominator"));
+
+    if (nom && nom.userId) {
+      if (nom.userId === currentUserId || nom.altUserId === currentUserId) {
+        document.getElementById("nominatorMessage").textContent = `${nom.team} (${nom.displayName}) — You’re on the clock!`;
+        document.getElementById("nominatorPopup").style.display = "block";
+      } else {
+        document.getElementById("nominatorPopup").style.display = "none";
+      }
+
+      const nomTeamEl = document.querySelector(`[data-team-id="${nom.teamId}"]`);
+      if (nomTeamEl) nomTeamEl.classList.add("highlight-nominator");
+    }
+  } catch (err) {
+    console.error("State polling failed:", err);
+  }
+}</script>
+<style>
+.highlight-nominator {
+  outline: 3px solid gold;
+  border-radius: 8px;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% { outline-color: gold; }
+  50% { outline-color: orange; }
+  100% { outline-color: gold; }
+}
+</style>
+<script>
+const socket = io("https://api.wcahockey.com", { withCredentials: true });
+
+socket.on("player:nominated", (data) => {
+  console.log("📢 New nomination:", data);
+  const nominatedPlayer = document.getElementById("nominatedPlayer");
+  if (nominatedPlayer) nominatedPlayer.textContent = data.player;
+
+  const bidDisplay = document.querySelector("#nominatedPlayer + div");
+  if (bidDisplay) bidDisplay.textContent = `Starting Bid: $${data.amount}`;
+
+  // Optional: highlight team
+  const teamEls = document.querySelectorAll(".team-entry");
+  teamEls.forEach(el => el.classList.remove("highlight-nominator"));
+  const match = [...teamEls].find(el => el.textContent.includes(data.team));
+  if (match) match.classList.add("highlight-nominator");
+
+  // Restart timer visual
+  if (typeof startTimer === "function") startTimer();
+});
+
+socket.on("bid:update", (data) => {
+  console.log("💰 Bid updated:", data);
+  const bidDisplay = document.querySelector("#nominatedPlayer + div");
+  if (bidDisplay) bidDisplay.textContent = `Current Bid: $${data.highBid} by ${data.highBidder}`;
+});
+
+socket.on("timer:update", (data) => {
+  console.log("⏱ Timer update:", data);
+  if (typeof startTimer === "function") startTimer(data.secondsRemaining || 30);
+});
+</script>
+<div class="timer-wrapper">
+<svg height="100" id="timerSvg" width="100">
+<circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+<circle class="timer-progress" cx="50" cy="50" id="timerProgress" r="45"></circle>
+<text dy=".3em" font-size="20px" id="timerText" text-anchor="middle" x="50%" y="55%">--</text>
+</svg>
+</div>
+<script>
+
+function startTimer(duration = 30) {
+  let remaining = duration;
+  const text = document.getElementById("timerText");
+  const circle = document.getElementById("timerProgress");
+  const full = 2 * Math.PI * 45;
+
+  clearInterval(countdownInterval);
+  circle.style.strokeDasharray = full;
+  circle.style.strokeDashoffset = 0;
+  text.textContent = `${remaining}s`;
+
+  const update = () => {
+    const progress = full * (remaining / duration);
+    circle.style.strokeDashoffset = full - progress;
+
+    if (remaining <= 5) circle.style.stroke = "red";
+    else if (remaining <= 15) circle.style.stroke = "orange";
+    else circle.style.stroke = "green";
+
+    text.textContent = `${remaining}s`;
+
+    if (remaining <= 0) {
+      clearInterval(countdownInterval);
+      text.textContent = "⏱️ Time’s up!";
+    }
+
+    remaining--;
+  };
+
+  update();
+  countdownInterval = setInterval(update, 1000);
+}
+</script>
+<script>
+const bidHistoryList = document.getElementById("bidHistoryList");
+
+function addToBidHistory(entry) {
+  const li = document.createElement("li");
+  const time = new Date(entry.timestamp * 1000).toLocaleTimeString();
+  li.innerHTML = `<strong>${entry.bidder}</strong> bid <strong>$${entry.amount}</strong> on <strong>${entry.player}</strong> <span style="color: gray; font-size: 0.9em;">@ ${time}</span>`;
+  bidHistoryList.prepend(li);
+  if (bidHistoryList.children.length > 50) {
+    bidHistoryList.removeChild(bidHistoryList.lastChild);
+  }
+}
+
+async function loadInitialHistory() {
+  try {
+    const res = await fetch("https://api.wcahockey.com/auction/history");
+    const data = await res.json();
+    data.slice(-50).forEach(addToBidHistory);
+  } catch (err) {
+    console.error("Failed to load bid history:", err);
+  }
+}
+loadInitialHistory();
+
+socket.on("bid:update", (data) => {
+  addToBidHistory({
+    player: data.player || "Unknown",
+    amount: data.highBid,
+    bidder: data.highBidder,
+    timestamp: Date.now() / 1000
+  });
+});
+</script><script>
+socket.on("team:update", (data) => {
+  const section = document.getElementById("yourTeam");
+  const el = document.getElementById("teamInfo");
+  if (!data || !data.isGMOrOwner) {
+    section.style.display = "none";
+    return;
+  }
+  section.style.display = "block";
+  let html = `
+    <p><strong>Team:</strong> ${data.teamName}</p>
+    <p><strong>Remaining Salary:</strong> $${data.salaryRemaining}</p>
+    <p><strong>Roster Size:</strong> ${data.rosterCount}</p>
+    <div style="background:#f4f4f4; padding:5px; border-radius:6px;">
+      ${data.players.map(p => `🎟️ ${p.name} - $${p.cost}`).join("<br>")}
+    </div>
+  `;
+  el.innerHTML = html;
+});
 </script></body>
 </html>
