@@ -329,7 +329,7 @@ async function pollAuctionState() {
     const data = await res.json();
     if (data.active) {
       playerEl.textContent = data.player || "--";
-      currentBidEl.textContent = `$${data.high_bid} by ${data.high_bidder || "???"}`;
+      if (currentBidEl) currentBidEl.textContent = `$${data.high_bid} by ${data.high_bidder || "???"}`;
       if (data.time_remaining > 0) {
         timerEl.textContent = `⏱️ ${data.time_remaining}s`;
       } else {
