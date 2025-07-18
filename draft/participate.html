@@ -222,13 +222,12 @@
 <p>💰 Team Blue bid $4</p>
 </div>
 </div>
-<div class="mock-section">
-<h3>Your Team</h3>
-<p><strong>Team:</strong> Team Red</p>
-<p><strong>Remaining Salary:</strong> $496</p>
-<p><strong>Roster Size:</strong> 1</p>
-<div class="roster">
-<p>🏒 Jane Smith - $4</p>
+
+<div class="mock-section" id="yourTeam">
+  <h3 id="userRoleHeader">Your Team</h3>
+  <div id="teamInfo">
+    <p>Loading...</p>
+  </div>
 </div>
 </div>
 <script>
@@ -430,6 +429,20 @@ async function pollAuctionState() {
 }
 </style>
 <script>
+
+async function updateUserHeader(role) {
+  try {
+    const res = await fetch("https://api.wcahockey.com/api/me", { credentials: "include" });
+    const user = await res.json();
+    const username = user.username || "User";
+    const roleText = role === 'Owner' || role === 'GM' ? role : '';
+    document.getElementById("userRoleHeader").textContent = `${username} (${roleText})`;
+  } catch (err) {
+    console.error("❌ Failed to fetch user info:", err);
+  }
+}
+
+
 const socket = io("https://api.wcahockey.com", { withCredentials: true });
 
 socket.on("player:nominated", (data) => {
@@ -536,33 +549,22 @@ socket.on("bid:update", (data) => {
   });
 });
 </script><script>
-// WebSocket connection indicator
-socket.on("connect", () => {
-  const el = document.getElementById("socketStatus");
-  el.textContent = "🟢 Live Connection";
-  el.style.color = "green";
-});
-
-socket.on("disconnect", () => {
-  const el = document.getElementById("socketStatus");
-  el.textContent = "🔴 Disconnected";
-  el.style.color = "red";
-});
-
-// Live team cap + roster updates
 socket.on("team:update", (data) => {
+  const section = document.getElementById("yourTeam");
   const el = document.getElementById("teamInfo");
-  if (!data || !data.teamName) {
-    el.innerHTML = "<p>No team data available.</p>";
+  if (!data || !data.isGMOrOwner) {
+    section.style.display = "none";
     return;
   }
-
+  section.style.display = "block";
+  updateUserHeader(data.role);
   let html = `
     <p><strong>Team:</strong> ${data.teamName}</p>
-    <p><strong>Roster:</strong> ${data.rosterCount} / ${data.maxRoster}</p>
-    <p><strong>Cap Remaining:</strong> $${data.salaryRemaining}</p>
-    <p><strong>Players:</strong></p>
-    <ul>${data.players.map(p => `<li>${p.name} ($${p.cost})</li>`).join("")}</ul>
+    <p><strong>Remaining Salary:</strong> $${data.salaryRemaining}</p>
+    <p><strong>Roster Size:</strong> ${data.rosterCount}</p>
+    <div style="background:#f4f4f4; padding:5px; border-radius:6px;">
+      ${data.players.map(p => `🎟️ ${p.name} - $${p.cost}`).join("<br>")}
+    </div>
   `;
   el.innerHTML = html;
 });
