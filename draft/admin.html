@@ -1,6 +1,5 @@
 
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -12,7 +11,7 @@
     label { display: block; margin: 1em 0 0.25em; }
     input[type="number"], input[type="text"] { width: 100%; padding: 0.5em; }
     button { margin-top: 1.5em; padding: 0.75em 1.5em; font-size: 1em; }
-  </style>
+</style>
 </head>
 <body>
 <h1>Draft Admin Settings</h1>
@@ -29,59 +28,73 @@
 <input id="maxRosterSize" min="1" name="maxRosterSize" type="number"/>
 <label>
 <input id="matchBidEnabled" name="matchBidEnabled" type="checkbox"/>
-      Enable Match Bid
-    </label>
+Enable Match Bid
+</label>
 <button type="submit">💾 Save Settings</button>
 </form>
 <p id="status" style="margin-top: 1em;"></p>
 <script>
-  const API_BASE = "https://api.wcahockey.com";
-    async function loadSettings() {
-      try {
-        const res = await fetch(`${API_BASE}/api/admin/settings`, { credentials: "include" });
-        if (!res.ok) throw new Error("Unauthorized or failed to fetch");
-        const data = await res.json();
-        for (const key in data) {
-          const el = document.getElementById(key);
-          if (el) {
-            if (el.type === "checkbox") {
-              el.checked = data[key];
-            } else {
-              el.value = data[key];
-            }
-          }
+const API_BASE = "https://api.wcahockey.com";
+async function loadSettings() {
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/settings`, { credentials: "include" });
+    if (!res.ok) throw new Error("Unauthorized or failed to fetch");
+    const data = await res.json();
+    for (const key in data) {
+      const el = document.getElementById(key);
+      if (el) {
+        if (el.type === "checkbox") {
+          el.checked = data[key];
+        } else {
+          el.value = data[key];
         }
-      } catch (err) {
-        document.getElementById("status").textContent = "⚠️ Failed to load settings.";
-        console.error(err);
       }
     }
+  } catch (err) {
+    document.getElementById("status").textContent = "⚠️ Failed to load settings.";
+    console.error(err);
+  }
+}
 
-    document.getElementById("settingsForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const form = new FormData(e.target);
-      const body = {};
-      for (const [key, value] of form.entries()) {
-        body[key] = isNaN(value) ? value : Number(value);
-      }
-      body.matchBidEnabled = document.getElementById("matchBidEnabled").checked;
+document.getElementById("settingsForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const body = {};
+  for (const [key, value] of form.entries()) {
+    body[key] = isNaN(value) ? value : Number(value);
+  }
+  body.matchBidEnabled = document.getElementById("matchBidEnabled").checked;
 
-      try {
-        const res = await fetch(`${API_BASE}/api/admin/settings`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
-        });
-        if (!res.ok) throw new Error("Update failed");
-        document.getElementById("status").textContent = "✅ Settings saved successfully!";
-      } catch (err) {
-        document.getElementById("status").textContent = "❌ Failed to save settings.";
-        console.error(err);
-      }
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/settings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
     });
+    if (!res.ok) throw new Error("Update failed");
+    document.getElementById("status").textContent = "✅ Settings saved successfully!";
+  } catch (err) {
+    document.getElementById("status").textContent = "❌ Failed to save settings.";
+    console.error(err);
+  }
+});
 
-    loadSettings();
-  </script>
+async function startDraft() {
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/start-draft`, {
+      method: "POST",
+      credentials: "include"
+    });
+    if (!res.ok) throw new Error(await res.text());
+    alert("✅ Draft started!");
+  } catch (err) {
+    alert("❌ Failed to start draft: " + err.message);
+  }
+}
+
+loadSettings();
+</script>
+
 <div style="margin-top: 2em; text-align: center;">
 <button onclick="window.location.href='/draft/participate'" style="
       padding: 0.6em 1.5em;
@@ -100,6 +113,7 @@
 <button onclick="forceNominate()">Force Nominate</button>
 <button onclick="skipNominator()" style="margin-left: 1em;">Skip Current Nominator</button>
 <button onclick="togglePause()" style="margin-left: 1em;">Pause / Resume Nomination</button>
+<button onclick="startDraft()" style="margin-top: 1em; background-color: green;">🚀 Start Draft</button>
 
 </body>
 </html>
