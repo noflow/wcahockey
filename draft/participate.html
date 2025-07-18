@@ -195,7 +195,7 @@
 <button>Match Bid</button>
 </div>
 <div class="mock-section">
-<h3>Available Players to Nominate</h3><div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;"><input id="playerSearch" placeholder="Search name..." style="flex: 2; padding: 0.4rem; border-radius: 5px; border: 1px solid var(--primary);"/><select id="filterPosition" style="flex: 1;"><option value="">All Positions</option><option value="Center">Center</option><option value="Wing">Wing</option><option value="Defense">Defense</option><option value="Goalie">Goalie</option></select><select id="filterHand" style="flex: 1;"><option value="">All Hands</option><option value="Left">Left</option><option value="Right">Right</option></select></div>
+<h3>Available Players to Nominate</h3>
 <input id="playerSearch" placeholder="Search players..." style="width: 100%; padding: 0.4rem; margin-bottom: 0.5rem; border-radius: 5px; border: 1px solid var(--primary);" type="text"/>
 <div class="players-list" id="players">
 <div class="player-line" data-main="Center" data-secondary="Right Wing">
@@ -303,7 +303,7 @@ function nominatePlayer() {
   }
 }
 </script>
-<div class="mock-section">
+<div class="mock-section" style="max-height: 250px; overflow-y: auto;"><h3>📜 Bid History</h3><ul id="bidHistoryList" style="list-style: none; padding-left: 0; margin: 0;"></ul></div><div class="mock-section">
 <h3>Logged-In Users</h3>
 <div class="log">
 <p>👤 slur1979</p>
@@ -325,7 +325,7 @@ async function pollAuctionState() {
     const data = await res.json();
     if (data.active) {
       playerEl.textContent = data.player || "--";
-      if (currentBidEl) currentBidEl.textContent = `$${data.high_bid} by ${data.high_bidder || "???"}`;
+      currentBidEl.textContent = `$${data.high_bid} by ${data.high_bidder || "???"}`;
       if (data.time_remaining > 0) {
         timerEl.textContent = `⏱️ ${data.time_remaining}s`;
       } else {
@@ -508,28 +508,36 @@ function startTimer(duration = 30) {
 }
 </script>
 <script>
-function applyPlayerFilters() {
-  const nameQuery = document.getElementById("playerSearch").value.toLowerCase();
-  const positionFilter = document.getElementById("filterPosition").value.toLowerCase();
-  const handFilter = document.getElementById("filterHand").value.toLowerCase();
+const bidHistoryList = document.getElementById("bidHistoryList");
 
-  document.querySelectorAll(".player-line").forEach(line => {
-    const text = line.textContent.toLowerCase();
-    const posText = (line.dataset.main + " " + line.dataset.secondary).toLowerCase();
-    const handText = line.textContent.toLowerCase();
-
-    const matchesName = text.includes(nameQuery);
-    const matchesPos = !positionFilter || posText.includes(positionFilter);
-    const matchesHand = !handFilter || handText.includes(handFilter);
-
-    line.style.display = (matchesName && matchesPos && matchesHand) ? "block" : "none";
-  });
+function addToBidHistory(entry) {
+  const li = document.createElement("li");
+  const time = new Date(entry.timestamp * 1000).toLocaleTimeString();
+  li.innerHTML = `<strong>${entry.bidder}</strong> bid <strong>$${entry.amount}</strong> on <strong>${entry.player}</strong> <span style="color: gray; font-size: 0.9em;">@ ${time}</span>`;
+  bidHistoryList.prepend(li);
+  if (bidHistoryList.children.length > 50) {
+    bidHistoryList.removeChild(bidHistoryList.lastChild);
+  }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("playerSearch").addEventListener("input", applyPlayerFilters);
-  document.getElementById("filterPosition").addEventListener("change", applyPlayerFilters);
-  document.getElementById("filterHand").addEventListener("change", applyPlayerFilters);
+async function loadInitialHistory() {
+  try {
+    const res = await fetch("https://api.wcahockey.com/auction/history");
+    const data = await res.json();
+    data.slice(-50).forEach(addToBidHistory);
+  } catch (err) {
+    console.error("Failed to load bid history:", err);
+  }
+}
+loadInitialHistory();
+
+socket.on("bid:update", (data) => {
+  addToBidHistory({
+    player: data.player || "Unknown",
+    amount: data.highBid,
+    bidder: data.highBidder,
+    timestamp: Date.now() / 1000
+  });
 });
 </script></body>
 </html>
