@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -137,6 +136,16 @@
 }
 </style>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+window.socket = window.socket || io("https://api.wcahockey.com", { withCredentials: true });
+
+// ✅ Optional Debugging
+socket.on("connect", () => console.log("🟢 WebSocket connected"));
+socket.on("disconnect", () => console.warn("🔴 WebSocket disconnected"));
+socket.on("team:update", (data) => {
+  console.log("🐞 [Debug] team:update received", data);
+});
+</script>
 <style>
 .timer-wrapper {
   width: 100px;
@@ -443,9 +452,6 @@ async function updateUserHeader(role) {
   }
 }
 
-console.log("🟢 Connecting to WebSocket...");
-const socket = io();
-const socket = io("https://api.wcahockey.com", { withCredentials: true });
 
 socket.on("player:nominated", (data) => {
   console.log("📢 New nomination:", data);
