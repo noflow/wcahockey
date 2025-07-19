@@ -442,7 +442,8 @@ async function updateUserHeader(role) {
   }
 }
 
-
+console.log("🟢 Connecting to WebSocket...");
+const socket = io();
 const socket = io("https://api.wcahockey.com", { withCredentials: true });
 
 socket.on("player:nominated", (data) => {
