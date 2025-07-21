@@ -178,7 +178,10 @@
   50% { outline-color: orange; }
   100% { outline-color: gold; }
 }
-</style><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script><script>const socket = io();</script></head>
+</style><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script><script>
+const API_BASE = "https://api.wcahockey.com";
+const socket = io(API_BASE);
+</script></head>
 <body data-theme="light">
 <div id="container">
 <header>
@@ -343,7 +346,7 @@ let currentUsername = null;
 // Safe fetch user
 async function getCurrentUser() {
   try {
-    const res = await fetch("/me", { credentials: "include" });
+    const res = await fetch(`${API_BASE}/me`, { credentials: "include" });
     const data = await res.json();
     currentUserId = data.id;
     currentUsername = data.username;
@@ -391,7 +394,7 @@ async function nominatePlayer() {
   };
 
   try {
-    const res = await fetch("/nominate", {
+    const res = await fetch(`${API_BASE}/nominate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
