@@ -178,10 +178,7 @@
   50% { outline-color: orange; }
   100% { outline-color: gold; }
 }
-</style><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script><script>
-const API_BASE = "https://api.wcahockey.com";
-const socket = io(API_BASE);
-</script></head>
+</style><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script></head>
 <body data-theme="light">
 <div id="container">
 <header>
@@ -346,7 +343,7 @@ let currentUsername = null;
 // Safe fetch user
 async function getCurrentUser() {
   try {
-    const res = await fetch(`${API_BASE}/me`, { credentials: "include" });
+    const res = await fetch("/me", { credentials: "include" });
     const data = await res.json();
     currentUserId = data.id;
     currentUsername = data.username;
@@ -394,7 +391,7 @@ async function nominatePlayer() {
   };
 
   try {
-    const res = await fetch(`${API_BASE}/nominate`, {
+    const res = await fetch("/nominate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -404,6 +401,52 @@ async function nominatePlayer() {
     if (result.status === "success") {
       document.getElementById("nominatedPlayer").textContent = selectedPlayer;
       alert("✅ Player nominated!");
+      document.getElementById("nominateBtn").disabled = true;
+    } else {
+      alert("❌ " + result.message);
+    }
+  } catch (err) {
+    console.error("❌ Nomination error:", err);
+    alert("❌ Failed to nominate.");
+  }
+}
+</script><script>
+// Set base for all API calls and Socket.IO
+const socket = io("https://wcahockey.com");
+
+async function getCurrentUser() {
+  try {
+    const res = await fetch("/api/me", { credentials: "include" });
+    const data = await res.json();
+    currentUserId = data.id;
+    currentUsername = data.username;
+    console.log("✅ Logged in as:", currentUsername);
+  } catch (err) {
+    console.error("❌ Failed to fetch user:", err);
+  }
+}
+
+async function nominatePlayer() {
+  if (!selectedPlayer || !currentUserId || !currentUsername) {
+    alert("❌ Missing player or user info");
+    return;
+  }
+
+  const payload = {
+    player: selectedPlayer
+  };
+
+  try {
+    const res = await fetch("/api/nominate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload)
+    });
+    const result = await res.json();
+    if (result.status === "success") {
+      document.getElementById("nominatedPlayer").textContent = selectedPlayer;
+      alert("✅ Nominated!");
       document.getElementById("nominateBtn").disabled = true;
     } else {
       alert("❌ " + result.message);
