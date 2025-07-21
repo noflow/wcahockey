@@ -178,7 +178,7 @@
   50% { outline-color: orange; }
   100% { outline-color: gold; }
 }
-</style><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script></head>
+</style><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script><script>const socket = io();</script></head>
 <body data-theme="light">
 <div id="container">
 <header>
@@ -296,7 +296,7 @@ socket.on("team:update", populateYourTeam);
 (async function fetchTeamDataFallback() {
   try {
     const [userRes, roleRes] = await Promise.all([
-      fetch("https://api.wcahockey.com/api/me", { credentials: "include" }),
+      fetch("https://api.wcahockey.com/me", { credentials: "include" }),
       fetch("https://api.wcahockey.com/api/roles", { credentials: "include" })
     ]);
     const user = await userRes.json();
@@ -343,7 +343,7 @@ let currentUsername = null;
 // Safe fetch user
 async function getCurrentUser() {
   try {
-    const res = await fetch("/api/me", { credentials: "include" });
+    const res = await fetch("/me", { credentials: "include" });
     const data = await res.json();
     currentUserId = data.id;
     currentUsername = data.username;
