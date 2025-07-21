@@ -193,17 +193,7 @@
 <h2>Current Player</h2>
 <p><strong>Name:</strong> <span id="nominatedPlayer">--</span></p>
 <p><strong>Current Bid:</strong> $4 by Team Blue</p>
-  <div style="float: right;">
-    <div class="timer-wrapper">
-      <svg height="100" id="timerSvg" width="100">
-        <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
-        <circle class="timer-progress" cx="50" cy="50" id="timerProgress" r="45"></circle>
-        <text dy=".3em" font-size="20px" id="timerText" text-anchor="middle" x="50%" y="55%">--</text>
-      </svg>
-    </div>
-  </div>
-
-
+<div class="timer" id="timer">⏱️ --</div>
 </div>
 <div class="mock-section bid-controls">
 <h3>Bidding Controls</h3>
@@ -262,7 +252,13 @@
   background: #222; color: white; padding: 2em; border-radius: 10px; font-size: 1.5em; text-align: center; z-index: 1000;">
 <span id="nominatorMessage"></span>
 </div>
-
+<div class="timer-wrapper">
+<svg height="100" id="timerSvg" width="100">
+<circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+<circle class="timer-progress" cx="50" cy="50" id="timerProgress" r="45"></circle>
+<text dy=".3em" font-size="20px" id="timerText" text-anchor="middle" x="50%" y="55%">--</text>
+</svg>
+</div>
 <script>
 function toggleTheme() {
   const current = document.body.getAttribute('data-theme');
