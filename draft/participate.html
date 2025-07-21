@@ -285,57 +285,13 @@ function logout() {
   window.location.href = '/auth/discord';
 }
 </script><script>
-const API_BASE = "https://api.wcahockey.com";
-const socket = io(API_BASE);
-
-let selectedPlayer = null;
-let currentUserId = null;
-let currentUsername = null;
-
-async function getCurrentUser() {
-  try {
-    const res = await fetch(`${API_BASE}/api/me`, { credentials: "include" });
-    const data = await res.json();
-    currentUserId = data.id;
-    currentUsername = data.username;
-    console.log("✅ Logged in as:", currentUsername);
-  } catch (err) {
-    console.error("❌ Failed to fetch user:", err);
-  }
-}
-getCurrentUser();
-
-document.querySelectorAll(".player-line").forEach(line => {
-  line.addEventListener("click", () => {
-    document.querySelectorAll(".player-line").forEach(p => p.classList.remove("selected"));
-    line.classList.add("selected");
-    const main = line.getAttribute("data-main");
-    const sec = line.getAttribute("data-secondary");
-    const name = line.childNodes[0].textContent.trim();
-    selectedPlayer = sec ? `${name}   ${main} / ${sec}` : `${name}   ${main}`;
-    document.getElementById("nominateBtn").disabled = false;
-  });
-});
-
-document.getElementById("playerSearch").addEventListener("input", function () {
-  const query = this.value.toLowerCase();
-  document.querySelectorAll(".player-line").forEach(line => {
-    const name = line.textContent.toLowerCase();
-    line.style.display = name.includes(query) ? "block" : "none";
-  });
-});
-
 async function nominatePlayer() {
-  if (!selectedPlayer || !currentUserId || !currentUsername) {
-    alert("❌ Missing player or user info");
+  if (!selectedPlayer) {
+    alert("❌ No player selected");
     return;
   }
 
-  const payload = {
-    userId: currentUserId,
-    username: currentUsername,
-    player: selectedPlayer
-  };
+  const payload = { player: selectedPlayer };
 
   try {
     const res = await fetch(`${API_BASE}/api/nominate`, {
@@ -357,5 +313,33 @@ async function nominatePlayer() {
     alert("❌ Failed to nominate.");
   }
 }
+</script><script>
+async function loadDraftPlayers() {
+  try {
+    const res = await fetch(`${API_BASE}/api/draft-list`);
+    const players = await res.json();
+    const list = document.getElementById("playerList");
+    list.innerHTML = "";
+
+    players.forEach(p => {
+      const el = document.createElement("div");
+      el.className = "player-line";
+      el.setAttribute("data-main", p["Main Position"]);
+      el.setAttribute("data-secondary", p["Other Positions"]);
+      el.textContent = `${p["PSN / XBL ID"]}   ${p["Main Position"]}${p["Other Positions"] ? " / " + p["Other Positions"] : ""}`;
+      el.addEventListener("click", () => {
+        document.querySelectorAll(".player-line").forEach(p => p.classList.remove("selected"));
+        el.classList.add("selected");
+        selectedPlayer = el.textContent;
+        document.getElementById("nominateBtn").disabled = false;
+      });
+      list.appendChild(el);
+    });
+  } catch (err) {
+    console.error("❌ Failed to load player list", err);
+  }
+}
+
+window.addEventListener("DOMContentLoaded", loadDraftPlayers);
 </script></body>
 </html>
