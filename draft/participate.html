@@ -269,57 +269,6 @@
 <span id="nominatorMessage"></span>
 </div>
 <script>
-function populateYourTeam(data) {
-  const section = document.getElementById("yourTeam");
-  const el = document.getElementById("teamInfo");
-
-  if (!data || !data.isGMOrOwner) {
-    section.style.display = "none";
-    return;
-  }
-
-  section.style.display = "block";
-  document.getElementById("userRoleHeader").textContent = `${data.username} (${data.role})`;
-  let html = `
-    <p><strong>Team:</strong> ${data.teamName}</p>
-    <p><strong>Remaining Salary:</strong> $${data.salaryRemaining}</p>
-    <p><strong>Roster Size:</strong> ${data.rosterCount}</p>
-    <div style="background:#f4f4f4; padding:5px; border-radius:6px;">
-      ${data.players.map(p => `🎟️ ${p.name} - $${p.cost}`).join("<br>")}
-    </div>
-  `;
-  el.innerHTML = html;
-}
-
-socket.on("team:update", populateYourTeam);
-
-(async function fetchTeamDataFallback() {
-  try {
-    const [userRes, roleRes] = await Promise.all([
-      fetch("https://api.wcahockey.com/me", { credentials: "include" }),
-      fetch("https://api.wcahockey.com/api/roles", { credentials: "include" })
-    ]);
-    const user = await userRes.json();
-    const roles = await roleRes.json();
-    if (roles.isOwner || roles.isGM) {
-      const res = await fetch("https://api.wcahockey.com/api/auction/state", { credentials: "include" });
-      const state = await res.json();
-      const teamData = {
-        username: user.username,
-        role: roles.isOwner ? "Owner" : "GM",
-        teamName: state.currentNominator?.team || "Unknown",
-        salaryRemaining: 500,
-        rosterCount: 0,
-        players: [],
-        isGMOrOwner: true
-      };
-      populateYourTeam(teamData);
-    }
-  } catch (err) {
-    console.error("Fallback team fetch failed", err);
-  }
-})();
-</script><script>
 function toggleTheme() {
   const current = document.body.getAttribute('data-theme') || 'light';
   const next = current === 'light' ? 'dark' : 'light';
@@ -336,20 +285,22 @@ function logout() {
   window.location.href = '/auth/discord';
 }
 </script><script>
+const API_BASE = "https://api.wcahockey.com";
+const socket = io(API_BASE);
+
 let selectedPlayer = null;
 let currentUserId = null;
 let currentUsername = null;
 
-// Safe fetch user
 async function getCurrentUser() {
   try {
-    const res = await fetch("/me", { credentials: "include" });
+    const res = await fetch(`${API_BASE}/api/me`, { credentials: "include" });
     const data = await res.json();
     currentUserId = data.id;
     currentUsername = data.username;
-    console.log("✅ User loaded:", currentUsername);
+    console.log("✅ Logged in as:", currentUsername);
   } catch (err) {
-    console.error("❌ Failed to fetch user", err);
+    console.error("❌ Failed to fetch user:", err);
   }
 }
 getCurrentUser();
@@ -373,63 +324,6 @@ document.getElementById("playerSearch").addEventListener("input", function () {
     line.style.display = name.includes(query) ? "block" : "none";
   });
 });
-
-async function nominatePlayer() {
-  if (!selectedPlayer) {
-    alert("❌ No player selected");
-    return;
-  }
-  if (!currentUserId || !currentUsername) {
-    alert("❌ User not loaded yet. Please wait and try again.");
-    return;
-  }
-
-  const payload = {
-    userId: currentUserId,
-    username: currentUsername,
-    player: selectedPlayer
-  };
-
-  try {
-    const res = await fetch("/nominate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(payload)
-    });
-    const result = await res.json();
-    if (result.status === "success") {
-      document.getElementById("nominatedPlayer").textContent = selectedPlayer;
-      alert("✅ Player nominated!");
-      document.getElementById("nominateBtn").disabled = true;
-    } else {
-      alert("❌ " + result.message);
-    }
-  } catch (err) {
-    console.error("❌ Nomination error:", err);
-    alert("❌ Failed to nominate.");
-  }
-}
-</script><script>
-const API_BASE = "https://api.wcahockey.com";
-const socket = io(API_BASE);
-
-let selectedPlayer = null;
-let currentUserId = null;
-let currentUsername = null;
-
-async function getCurrentUser() {
-  try {
-    const res = await fetch(`${API_BASE}/api/me`, { credentials: "include" });
-    const data = await res.json();
-    currentUserId = data.id;
-    currentUsername = data.username;
-    console.log("✅ Logged in as:", currentUsername);
-  } catch (err) {
-    console.error("❌ Failed to fetch user:", err);
-  }
-}
-getCurrentUser();
 
 async function nominatePlayer() {
   if (!selectedPlayer || !currentUserId || !currentUsername) {
