@@ -411,12 +411,16 @@ async function nominatePlayer() {
   }
 }
 </script><script>
-// Set base for all API calls and Socket.IO
-const socket = io("https://wcahockey.com");
+const API_BASE = "https://api.wcahockey.com";
+const socket = io(API_BASE);
+
+let selectedPlayer = null;
+let currentUserId = null;
+let currentUsername = null;
 
 async function getCurrentUser() {
   try {
-    const res = await fetch("/api/me", { credentials: "include" });
+    const res = await fetch(`${API_BASE}/api/me`, { credentials: "include" });
     const data = await res.json();
     currentUserId = data.id;
     currentUsername = data.username;
@@ -425,6 +429,7 @@ async function getCurrentUser() {
     console.error("❌ Failed to fetch user:", err);
   }
 }
+getCurrentUser();
 
 async function nominatePlayer() {
   if (!selectedPlayer || !currentUserId || !currentUsername) {
@@ -433,11 +438,13 @@ async function nominatePlayer() {
   }
 
   const payload = {
+    userId: currentUserId,
+    username: currentUsername,
     player: selectedPlayer
   };
 
   try {
-    const res = await fetch("/api/nominate", {
+    const res = await fetch(`${API_BASE}/api/nominate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -446,7 +453,7 @@ async function nominatePlayer() {
     const result = await res.json();
     if (result.status === "success") {
       document.getElementById("nominatedPlayer").textContent = selectedPlayer;
-      alert("✅ Nominated!");
+      alert("✅ Player nominated!");
       document.getElementById("nominateBtn").disabled = true;
     } else {
       alert("❌ " + result.message);
