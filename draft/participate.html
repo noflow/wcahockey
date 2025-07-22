@@ -2,7 +2,11 @@
 <!DOCTYPE html>
 
 <html lang="en">
-<head>
+<head><script>
+const API_BASE = "https://api.wcahockey.com";
+const socket = io(API_BASE);
+let selectedPlayer = null;
+</script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Live Draft</title>
@@ -223,23 +227,7 @@
 <div class="mock-section">
 <h3>Available Players to Nominate</h3>
 <input id="playerSearch" placeholder="Search players..." style="width: 100%; padding: 0.4rem; margin-bottom: 0.5rem; border-radius: 5px; border: 1px solid var(--primary);" type="text"/>
-<div class="players-list" id="players">
-<div class="player-line" data-main="Center" data-secondary="Right Wing">
-    Connor McDavid <span class="positions">Center / Right Wing</span>
-</div>
-<div class="player-line" data-main="Center" data-secondary="Left Wing">
-    Leon Draisaitl <span class="positions">Center / Left Wing</span>
-</div>
-<div class="player-line" data-main="Center" data-secondary="">
-    Auston Matthews <span class="positions">Center</span>
-</div>
-<div class="player-line" data-main="Center" data-secondary="">
-    Nathan MacKinnon <span class="positions">Center</span>
-</div>
-<div class="player-line" data-main="Defense" data-secondary="">
-    Cale Makar <span class="positions">Defense</span>
-</div>
-</div>
+<div class="players-list" id="players"></div>
 <button disabled="" id="nominateBtn" onclick="nominatePlayer()">Nominate</button>
 <div class="mock-section">
 <h3>Live Log</h3>
@@ -318,7 +306,7 @@ async function loadDraftPlayers() {
   try {
     const res = await fetch(`${API_BASE}/api/draft-list`);
     const players = await res.json();
-    const list = document.getElementById("playerList");
+    const list = document.getElementById("players");
     list.innerHTML = "";
 
     players.forEach(p => {
