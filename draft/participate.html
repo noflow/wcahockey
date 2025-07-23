@@ -385,5 +385,83 @@ function stopLocalTimer() {
 }
 </script>
 
+
+<script>
+// ========== BIDDING CONTROLS ==========
+document.querySelector(".bid-controls button:nth-of-type(1)").onclick = async () => {
+  await fetch(`${API_BASE}/api/bid`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ type: "min" })
+  });
+};
+
+document.querySelector(".bid-controls button:nth-of-type(3)").onclick = async () => {
+  const amt = parseInt(document.getElementById("flashBidInput").value);
+  if (!amt || amt <= 0) return alert("Enter valid $ amount");
+  await fetch(`${API_BASE}/api/bid`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ type: "flash", amount: amt })
+  });
+};
+
+document.querySelector(".bid-controls button:nth-of-type(5)").onclick = async () => {
+  const amt = parseInt(document.getElementById("autoBidInput").value);
+  if (!amt || amt <= 0) return alert("Enter valid max $");
+  await fetch(`${API_BASE}/api/autobid`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ maxBid: amt })
+  });
+};
+
+document.querySelector(".bid-controls button:nth-of-type(6)").onclick = async () => {
+  await fetch(`${API_BASE}/api/bid`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ type: "match" })
+  });
+};
+
+// ========== LOAD USER TEAM INFO ==========
+async function loadTeamInfo() {
+  try {
+    const res = await fetch(`${API_BASE}/api/team`, { credentials: "include" });
+    const data = await res.json();
+    const team = data.team || "Unknown";
+    const salary = data.salary || 0;
+    const used = data.used || 0;
+    const count = data.roster || 0;
+    document.getElementById("teamInfo").innerHTML = `
+      <p><strong>Team:</strong> ${team}</p>
+      <p><strong>Salary:</strong> $${salary - used} / $${salary}</p>
+      <p><strong>Roster:</strong> ${count} players</p>`;
+  } catch (e) {
+    console.error("Failed to load team info", e);
+  }
+}
+window.addEventListener("DOMContentLoaded", loadTeamInfo);
+
+// ========== SOCKET EVENTS ==========
+socket.on("draft:nominated", (data) => {
+  document.getElementById("nominatedPlayer").textContent = data.player || "--";
+});
+
+socket.on("draft:log", (message) => {
+  const logDivs = document.querySelectorAll(".log");
+  logDivs.forEach(div => {
+    const p = document.createElement("p");
+    p.textContent = message;
+    div.appendChild(p);
+    div.scrollTop = div.scrollHeight;
+  });
+});
+</script>
+
 </body>
 </html>
