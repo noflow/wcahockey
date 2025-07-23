@@ -304,7 +304,7 @@ async function nominatePlayer() {
 </script><script>
 async function loadDraftPlayers() {
   try {
-    const res = await fetch(`${API_BASE}/api/draft-list`);
+    const res = await fetch(`${API_BASE}/draft-list`);
     const players = await res.json();
     const list = document.getElementById("players");
     list.innerHTML = "";
