@@ -304,7 +304,7 @@ async function nominatePlayer() {
 </script><script>
 async function loadDraftPlayers() {
   try {
-    const res = await fetch(`${API_BASE}/draft-list`);
+    const res = await fetch(`${API_BASE}/api/draft-list`);
     const players = await res.json();
     const list = document.getElementById("players");
     list.innerHTML = "";
@@ -312,9 +312,9 @@ async function loadDraftPlayers() {
     players.forEach(p => {
       const el = document.createElement("div");
       el.className = "player-line";
-      el.setAttribute("data-main", p["Main Position"]);
-      el.setAttribute("data-secondary", p["Other Positions"]);
-      el.textContent = `${p["PSN / XBL ID"]}   ${p["Main Position"]}${p["Other Positions"] ? " / " + p["Other Positions"] : ""}`;
+      
+      
+      el.textContent = `${p.id}   ${p.position}   ${p.hand}`;
       el.addEventListener("click", () => {
         document.querySelectorAll(".player-line").forEach(p => p.classList.remove("selected"));
         el.classList.add("selected");
