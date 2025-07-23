@@ -2,12 +2,8 @@
 <!DOCTYPE html>
 
 <html lang="en">
-<head><script>
-let selectedPlayer = null;
-const API_BASE = "https://api.wcahockey.com";
-const socket = io(API_BASE);
-
-</script>
+<head><script>let selectedPlayer = null;
+const API_BASE = "https://api.wcahockey.com";</script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Live Draft</title>
@@ -184,11 +180,13 @@ const socket = io(API_BASE);
   100% { outline-color: gold; }
 }
 </style><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>const socket = io(API_BASE);</script>
 </head>
 <body data-theme="light">
 <div id="container">
 <header>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>const socket = io(API_BASE);</script>
 <h1>Live Auction Draft</h1><div id="socketStatus" style="margin-bottom: 10px; font-weight: bold; color: green;">🟢 Live Connection</div>
 <div class="top-buttons">
 <button onclick="toggleTheme()">🌓 Toggle Theme</button>
