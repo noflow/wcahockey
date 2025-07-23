@@ -461,5 +461,29 @@ socket.on("draft:log", (message) => {
 });
 </script>
 
+
+<script>
+// ===== TEAM UPDATE (live cap & roster refresh) =====
+socket.on("team:update", (data) => {
+  if (!data || !data.team) return;
+  const teamDiv = document.getElementById("teamInfo");
+  if (data.team === teamDiv.dataset.team) {
+    teamDiv.innerHTML = `
+      <p><strong>Team:</strong> ${data.team}</p>
+      <p><strong>Salary:</strong> $${data.salaryRemaining} / $${data.salaryTotal}</p>
+      <p><strong>Roster:</strong> ${data.rosterCount} players</p>`;
+  }
+});
+
+// ===== BID HISTORY =====
+socket.on("bid:update", (entry) => {
+  const list = document.getElementById("bidHistoryList");
+  const li = document.createElement("li");
+  li.textContent = `💰 ${entry.team} bid $${entry.amount}`;
+  list.appendChild(li);
+  list.scrollTop = list.scrollHeight;
+});
+</script>
+
 </body>
 </html>
