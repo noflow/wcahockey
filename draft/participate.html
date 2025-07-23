@@ -185,8 +185,6 @@ const API_BASE = "https://api.wcahockey.com";</script>
 <body data-theme="light">
 <div id="container">
 <header>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script>const socket = io(API_BASE);</script>
 <h1>Live Auction Draft</h1><div id="socketStatus" style="margin-bottom: 10px; font-weight: bold; color: green;">🟢 Live Connection</div>
 <div class="top-buttons">
 <button onclick="toggleTheme()">🌓 Toggle Theme</button>
@@ -302,34 +300,6 @@ async function nominatePlayer() {
     alert("❌ Failed to nominate.");
   }
 }
-</script><script>
-async function loadDraftPlayers() {
-  try {
-    const res = await fetch(`${API_BASE}/api/draft-list`);
-    const players = await res.json();
-    const list = document.getElementById("players");
-    list.innerHTML = "";
-
-    players.forEach(p => {
-      const el = document.createElement("div");
-      el.className = "player-line";
-      
-      
-      el.textContent = `${p.id}   ${p.position}   ${p.hand}`;
-      el.addEventListener("click", () => {
-        document.querySelectorAll(".player-line").forEach(p => p.classList.remove("selected"));
-        el.classList.add("selected");
-        selectedPlayer = el.textContent;
-        document.getElementById("nominateBtn").disabled = false;
-      });
-      list.appendChild(el);
-    });
-  } catch (err) {
-    console.error("❌ Failed to load player list", err);
-  }
-}
-
-window.addEventListener("DOMContentLoaded", loadDraftPlayers);
 </script>
 <script>
 const TIMER_MAX = 30; // You may override this with live value from backend
@@ -427,24 +397,7 @@ document.querySelector(".bid-controls button:nth-of-type(5)").onclick = async ()
   });
 };
 
-// ========== LOAD USER TEAM INFO ==========
-async function loadTeamInfo() {
-  try {
-    const res = await fetch(`${API_BASE}/api/team`, { credentials: "include" });
-    const data = await res.json();
-    const team = data.team || "Unknown";
-    const salary = data.salary || 0;
-    const used = data.used || 0;
-    const count = data.roster || 0;
-    document.getElementById("teamInfo").innerHTML = `
-      <p><strong>Team:</strong> ${team}</p>
-      <p><strong>Salary:</strong> $${salary - used} / $${salary}</p>
-      <p><strong>Roster:</strong> ${count} players</p>`;
-  } catch (e) {
-    console.error("Failed to load team info", e);
-  }
-}
-window.addEventListener("DOMContentLoaded", loadTeamInfo);
+
 
 // ========== SOCKET EVENTS ==========
 socket.on("draft:nominated", (data) => {
@@ -519,4 +472,93 @@ socket.on("bid:high", (data) => {
 </body>
 </html>
 
-}); // End DOMContentLoaded wrapper for bid buttons
+
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  // Load draft players
+  (async function loadDraftPlayers() {
+    try {
+      const res = await fetch(`${API_BASE}/api/draft-list`);
+      const players = await res.json();
+      const list = document.getElementById("players");
+      list.innerHTML = "";
+
+      players.forEach(p => {
+        const el = document.createElement("div");
+        el.className = "player-line";
+        el.textContent = `${p.id}   ${p.position}   ${p.hand}`;
+        el.addEventListener("click", () => {
+          document.querySelectorAll(".player-line").forEach(p => p.classList.remove("selected"));
+          el.classList.add("selected");
+          selectedPlayer = el.textContent;
+          document.getElementById("nominateBtn").disabled = false;
+        });
+        list.appendChild(el);
+      });
+    } catch (err) {
+      console.error("❌ Failed to load player list", err);
+    }
+  })();
+
+  // Load team info
+  (async function loadTeamInfo() {
+    try {
+      const res = await fetch(`${API_BASE}/api/team`, { credentials: "include" });
+      const data = await res.json();
+      const team = data.team || "Unknown";
+      const salary = data.salary || 0;
+      const used = data.used || 0;
+      const count = data.roster || 0;
+      const teamDiv = document.getElementById("teamInfo");
+      teamDiv.dataset.team = team;
+      teamDiv.innerHTML = `
+        <p><strong>Team:</strong> ${team}</p>
+        <p><strong>Salary:</strong> $${salary - used} / $${salary}</p>
+        <p><strong>Roster:</strong> ${count} players</p>`;
+    } catch (e) {
+      console.error("Failed to load team info", e);
+    }
+  })();
+
+  // Bidding button events
+  document.querySelector(".bid-controls button:nth-of-type(1)").onclick = async () => {
+    await fetch(`${API_BASE}/api/bid`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ type: "min" })
+    });
+  };
+
+  document.querySelector(".bid-controls button:nth-of-type(3)").onclick = async () => {
+    const amt = parseInt(document.getElementById("flashBidInput").value);
+    if (!amt || amt <= 0) return alert("Enter valid $ amount");
+    await fetch(`${API_BASE}/api/bid`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ type: "flash", amount: amt })
+    });
+  };
+
+  document.querySelector(".bid-controls button:nth-of-type(5)").onclick = async () => {
+    const amt = parseInt(document.getElementById("autoBidInput").value);
+    if (!amt || amt <= 0) return alert("Enter valid max $");
+    await fetch(`${API_BASE}/api/autobid`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ maxBid: amt })
+    });
+  };
+
+  document.querySelector(".bid-controls button:nth-of-type(6)").onclick = async () => {
+    await fetch(`${API_BASE}/api/bid`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ type: "match" })
+    });
+  };
+});
+</script>
