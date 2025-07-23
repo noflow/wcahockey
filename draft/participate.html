@@ -3,7 +3,9 @@
 
 <html lang="en">
 <head><script>
-const API_BASE = "https://api.wcahockey.com";
+const API_BASE = window.location.origin.includes("wcahockey.com")
+  ? "https://api.wcahockey.com"
+  : "http://localhost:5050";
 const socket = io(API_BASE);
 let selectedPlayer = null;
 </script>
@@ -280,6 +282,7 @@ async function nominatePlayer() {
   }
 
   const payload = { player: selectedPlayer };
+  console.log("🔁 Nomination payload:", payload);
 
   try {
     const res = await fetch(`${API_BASE}/api/nominate`, {
