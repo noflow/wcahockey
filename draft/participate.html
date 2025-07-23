@@ -485,5 +485,35 @@ socket.on("bid:update", (entry) => {
 });
 </script>
 
+
+<script>
+// ===== PLAYER WON ANIMATION =====
+socket.on("player:won", (data) => {
+  const msg = `🎉 ${data.player} won by ${data.team} for $${data.amount}`;
+  const popup = document.getElementById("nominatorPopup");
+  const message = document.getElementById("nominatorMessage");
+  message.textContent = msg;
+  popup.style.display = "block";
+  setTimeout(() => { popup.style.display = "none"; }, 4000);
+
+  // Remove player from list
+  document.querySelectorAll(".player-line").forEach(line => {
+    if (line.textContent.includes(data.player)) {
+      line.remove();
+    }
+  });
+
+  // Disable nomination
+  selectedPlayer = null;
+  document.getElementById("nominateBtn").disabled = true;
+});
+
+// ===== CURRENT HIGH BIDDER =====
+socket.on("bid:high", (data) => {
+  const display = document.querySelector("#nominatedPlayer").closest(".mock-section");
+  display.querySelector("p:nth-of-type(2)").innerHTML = `<strong>Current Bid:</strong> $${data.amount} by ${data.team}`;
+});
+</script>
+
 </body>
 </html>
