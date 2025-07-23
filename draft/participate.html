@@ -386,7 +386,8 @@ function stopLocalTimer() {
 
 <script>
 // ========== BIDDING CONTROLS ==========
-document.querySelector(".bid-controls button:nth-of-type(1)").onclick = async () => {
+window.addEventListener("DOMContentLoaded", () => {
+  document.querySelector(".bid-controls button:nth-of-type(1)").onclick = async () => {
   await fetch(`${API_BASE}/api/bid`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -417,7 +418,7 @@ document.querySelector(".bid-controls button:nth-of-type(5)").onclick = async ()
   });
 };
 
-document.querySelector(".bid-controls button:nth-of-type(6)").onclick = async () => {
+  document.querySelector(".bid-controls button:nth-of-type(6)").onclick = async () => {
   await fetch(`${API_BASE}/api/bid`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -517,3 +518,5 @@ socket.on("bid:high", (data) => {
 
 </body>
 </html>
+
+}); // End DOMContentLoaded wrapper for bid buttons
