@@ -183,7 +183,8 @@ const socket = io(API_BASE);
   50% { outline-color: orange; }
   100% { outline-color: gold; }
 }
-</style><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script></head>
+</style><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
 <body data-theme="light">
 <div id="container">
 <header>
@@ -331,5 +332,58 @@ async function loadDraftPlayers() {
 }
 
 window.addEventListener("DOMContentLoaded", loadDraftPlayers);
-</script></body>
+</script>
+<script>
+const TIMER_MAX = 30; // You may override this with live value from backend
+let timerInterval;
+let timeLeft = 0;
+
+// Listen for timer updates from WebSocket
+socket.on("timer:start", (data) => {
+  timeLeft = data.duration || TIMER_MAX;
+  updateBarTimer();
+  startLocalTimer();
+});
+
+socket.on("timer:tick", (data) => {
+  timeLeft = data.seconds;
+  updateBarTimer();
+});
+
+socket.on("timer:reset", (data) => {
+  timeLeft = data.seconds;
+  updateBarTimer();
+});
+
+socket.on("timer:end", () => {
+  timeLeft = 0;
+  updateBarTimer();
+  stopLocalTimer();
+});
+
+function updateBarTimer() {
+  const el = document.getElementById("barTimer");
+  const pct = Math.max(0, Math.min(100, (timeLeft / TIMER_MAX) * 100));
+  el.style.width = pct + "%";
+  el.style.backgroundColor = timeLeft <= 5 ? "red" : timeLeft <= 10 ? "orange" : "green";
+}
+
+function startLocalTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (timeLeft > 0) {
+      timeLeft -= 1;
+      updateBarTimer();
+    } else {
+      stopLocalTimer();
+    }
+  }, 1000);
+}
+
+function stopLocalTimer() {
+  clearInterval(timerInterval);
+}
+</script>
+
+</body>
 </html>
