@@ -430,14 +430,21 @@ async function loadTeamInfo() {
   try {
     const res = await fetch(`${API_BASE}/api/team`, { credentials: "include" });
     const data = await res.json();
-    const team = data.team || "Unknown";
-    const salary = data.salary || 0;
-    const used = data.used || 0;
-    const count = data.roster || 0;
+
+    if (data.error) {
+      document.getElementById("teamInfo").innerHTML = `<p><strong>Not assigned to a team.</strong></p>`;
+      return;
+    }
+
     document.getElementById("teamInfo").innerHTML = `
-      <p><strong>Team:</strong> ${team}</p>
-      <p><strong>Salary:</strong> $${salary - used} / $${salary}</p>
-      <p><strong>Roster:</strong> ${count} players</p>`;
+      <p><strong>Team:</strong> ${data.teamName}</p>
+      <p><strong>Salary Remaining:</strong> $${data.salaryRemaining}</p>
+      <p><strong>Roster:</strong> ${data.rosterCount} players</p>
+      <p><strong>Role:</strong> ${data.role}</p>
+    `;
+
+    document.getElementById("teamInfo").dataset.team = data.teamName; // for team:update socket match
+
   } catch (e) {
     console.error("Failed to load team info", e);
   }
